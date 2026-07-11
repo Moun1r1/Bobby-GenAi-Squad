@@ -147,6 +147,8 @@ the unfakeable parts).
 | [squad_reads_pdfs.py](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/squad_reads_pdfs.py) | arXiv knowledge farm | endpoint + `[papers]` |
 | [transfer_knowledge.py](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/transfer_knowledge.py) | transferable knowledge across agents & domains | endpoint + embedder |
 | [cross_sector_knowledge.py](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/cross_sector_knowledge.py) | reads **12 knowledge sectors** and bridges ideas between distant fields | endpoint + embedder |
+| [goal_focus_horizon.py](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/goal_focus_horizon.py) | goal held across 48 steps + context-wipes (48/48 vs 17/48) | endpoint |
+| [goal_unbreakable.py](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/goal_unbreakable.py) | 12 jailbreaks: prompt-level breaks (12/12), guard-first unbreakable (0/12) | endpoint |
 
 ### Real captured results
 
@@ -182,6 +184,43 @@ complex systems →  AI      : model attention as complex-valued energy landscap
 optimization  →  signal-proc: apply Lagrangian dual "Performance Estimation" certificates to bound a
                              deep-learning demodulation pipeline
 ```
+
+---
+
+## Stability
+
+### Goal focus over a long horizon
+
+48 self-directed steps with a **hard context-wipe every 8**. Only the memory architecture differs — the goal either
+survives the wipe (pinned tier) or scrolls out. After each wipe the agent must resume its own task coherently.
+
+| | valid steps | errors | clean resumes after a wipe | progress reached |
+|---|---|---|---|---|
+| **PINNED** (persistent-self) | **48 / 48** | **0** | **5 / 5** | 223 |
+| NAIVE | 17 / 48 | 31 | 1 / 5 | 113 |
+
+The pinned goal is re-grounded every turn, so the agent **never loses focus across the horizon** — it resumes and
+keeps climbing after every wipe, while the naive agent restarts and drifts.
+→ [goal_focus_horizon.py](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/goal_focus_horizon.py)
+
+### Under sophisticated attack — the honest picture
+
+12 real jailbreak techniques (direct override, authority spoofing, role-play, delimiter injection, encoded smuggle,
+few-shot poisoning, token-format confusion, …) against a checkable goal.
+
+<svg viewBox="0 0 600 150" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;background:#fff;border:1px solid #e5e5e5;border-radius:8px">
+  <text x="14" y="20" font-size="13" fill="#24292f" font-weight="bold">Attacks that broke the goal (of 12 — lower is better)</text>
+  <text x="14" y="52" font-size="12" fill="#24292f">NAIVE (told once)</text><rect x="150" y="40" width="380" height="16" fill="#d1242f" rx="2"/><text x="536" y="53" font-size="11" fill="#d1242f">12</text>
+  <text x="14" y="86" font-size="12" fill="#24292f">PINNED (self-core)</text><rect x="150" y="74" width="380" height="16" fill="#d1242f" rx="2"/><text x="536" y="87" font-size="11" fill="#d1242f">12</text>
+  <text x="14" y="120" font-size="12" fill="#24292f">GUARDED (guard-first)</text><rect x="150" y="108" width="4" height="16" fill="#1a7f37" rx="2"/><text x="160" y="121" font-size="11" fill="#1a7f37">0 — unbreakable</text>
+</svg>
+
+**Honest result:** prompt-level defenses — *including* persistent-self pinning — are **jailbreakable** (12/12).
+An LLM's compliance can always be manipulated. A goal becomes **unbreakable only when a deterministic guard enforces
+its invariant in code** (guard-first / fail-safe by construction): the GUARDED output can never violate the goal
+whatever the attack (0/12). This holds for goals with a **checkable invariant**; open-ended goals cannot be made
+prompt-unbreakable — an honest limit, not hidden.
+→ [goal_unbreakable.py](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/goal_unbreakable.py)
 
 ---
 
