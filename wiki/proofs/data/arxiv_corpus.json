@@ -1,0 +1,152 @@
+[
+ {
+  "id": "2607.05395v1",
+  "category": "hep-th",
+  "title": "Li\u00e9nard--Wiechert fields in AdS and flat-space antipodal matching from geodesic-centered Coulombic data",
+  "abstract": "We give a geometric derivation of Li'enard--Wiechert fields in flat space and in global AdS, emphasizing the origin of antipodal matching. In flat space, the field of a uniformly moving charge is obtained by using coordinates centered on the source timelike geodesic, where the charge is at rest and the solution is the ordinary Coulomb field. The nontrivial angular dependence of the leading data at null infinity arises only after rewriting this static solution in a non-centered frame, making the antipodal matching condition transparent. We extend the same construction to global AdS, where uniform motion is replaced by motion along a timelike geodesic. Starting from the static Maxwell solution at the AdS center, we use geodesic-adapted coordinates and embedding-space invariants to reconstruct the field in arbitrary global coordinates. This yields a closed-form AdS analogue of the Coulombic Li'enard--Wiechert field, including the gauge-invariant component $F_{\u03c1\u03c4}$. We show that the bulk field satisfies exact antipodal covariance, and that its null-fringe limit reproduces the standard flat-space antipodal matching relation between the Coulombic data at $\\mathscr I^+*-$ and $\\mathscr I^-*+$. We also describe an image-charge interpretation of the Coulomb seed, giving a unified picture of Coulombic fields, antipodal matching, and the AdS-to-flat-space limit."
+ },
+ {
+  "id": "2607.05385v1",
+  "category": "hep-th",
+  "title": "Charge-Sector Construction of the Type-IIB Axion--Dilaton Wormhole Partition Function",
+  "abstract": "I construct the Type-IIB axion--dilaton wormhole partition function from charge-sector data. In a chosen axion charge, equivalently form-field flux sector, the long-distance saddle calculation supplies a two-end operator term with coefficient matrix \\(C^{ij}_\u03bd\\). The labels \\(i,j\\) label end-insertion operators; the labels \\(A,B\\) label parent universes. Reduction data \\(b\\) convert this matrix into scalar coefficients \\(W_\u03bd[b]\\). The wormhole partition function in the theta variable is \\(Z_{\\rm wh}(\u03b8;b)=\\sum_\u03bdW_\u03bd[b]\\e^{i\u03bd\u03b8}\\). I analyze properties and constraints this coefficients satisfy: discrete-symmetry covariance, phase, absolute bounds, moment positivity, Cauchy--Schwarz inequalities for the unreduced coefficient matrix, complex-\\(\u03b8\\) domains, charge-lattice tails, and the dilute Bessel/Skellam limit. The \\(\u03b8\\)-dependence of the wormhole partition function is the Fourier transform of the charge-sector scalar coefficients."
+ },
+ {
+  "id": "2607.05338v1",
+  "category": "hep-th",
+  "title": "Does QFT make sense in non-integer dimensions?",
+  "abstract": "We revisit the old problem of analytically continuing QFTs to fractional dimension $d\\in\\mathbb C$. We observe that common theories like QCD and QED have branch cuts in the complex $d$ plane. In particular, many operators in their low-energy CFT have OPEs and scaling dimensions that jump as a function of $d$."
+ },
+ {
+  "id": "2607.05327v1",
+  "category": "hep-th",
+  "title": "Cosmological Correlators in KLF and the Double-Exchange",
+  "abstract": "In this work, we present the procedure to find series representations of tree-level cosmological correlators using the Kontorovich-Lebedev-Fourier (KLF) space formalism. This framework allows us to trade the in-in nested time integrals for frequency integrals over rational propagators and vertex functions, which encode interactions among quantum fields on a de Sitter background. Because these functions are the key objects to understand in order to perform a diagrammatic computation, we derive their relevant analytic properties by using both their integral representation and series representation in terms of Lauricella functions. For a vertex involving any number of fields, we obtain the location of singularities, the corresponding residues and the large-frequency asymptotic behaviour. Gathering these properties at each frequency integration allows us to compute a tree-level correlator directly, without relying on the differential equations it satisfies. To illustrate this procedure, we provide a complete treatment of the double-exchange diagram. The computation naturally distinguishes the different physical contributions, whether to the background or to the cosmological collider signal. The newly derived result is expressed at most in terms of a double series over hypergeometric functions, which simplifies the analytical expression of the correlator."
+ },
+ {
+  "id": "2607.05360v1",
+  "category": "math.AG",
+  "title": "Noncommutative Cartier Formulae",
+  "abstract": "We prove, for every $\\mathbb{E}_1$ algebra $A$, a formula describing the interaction of the action of the cap product on topological Hochschild homology of $A$ with the cyclotomic structure map, as well as a variant of this result relative to a ring $R$. Specializing to $R = \\mathbb{F}_p$ gives a noncommutative analog of a formula of Cartier which describes the conjugation of interior product action on differential forms by the Cartier isomorphism, and which computes the $p$-curvature of the Getzler-Gauss-Manin connection in terms of an equivariant cap product. The motivation for this formula comes from symplectic geometry, where (in the case $R=\\mathbb{F}_p$ or a Novikov analog) the symplectic analog of this formula explains the interaction between the cyclotomic structure on symplectic cohomology and the quantum Steenrod operations. We prove, under standard transversality and nondegeneracy assumptions on the Fukaya category, that for a Calabi-Yau symplectic manifold with rational symplectic form, the $p$-curvature of the quantum connection computes the Quantum Steenrod operations. In particular, the $p$-curvature of the quantum connections of projective Calabi-Yau hypersurfaces, and many other examples in mirror symmetry, can be interpreted in terms of $\\mathbb{Z}/p\\mathbb{Z}$-equivariant genus zero Gromov-Witten invariants."
+ },
+ {
+  "id": "2607.05344v1",
+  "category": "math.AG",
+  "title": "A note on stability conditions on projective spaces",
+  "abstract": "We give a new proof of Li's theorem on the existence of geometric Bridgeland stability conditions on the bounded derived category of coherent sheaves on projective spaces. These stability conditions can then be restricted to induce Bridgeland stability conditions on arbitrary smooth projective varieties."
+ },
+ {
+  "id": "2607.05341v1",
+  "category": "math.AG",
+  "title": "Universal affine bundles for compact complex manifolds",
+  "abstract": "We construct a universal affine bundle $E$ over a compact complex manifold $X$ equipped with a probability measure $\u03bc$, which is affine over the vector space $H_{1,1}(X;\\mathbb{R})$, and satisfies a number of natural properties. The bundle $E$ carries a natural action of the automorphism group of $(X,\u03bc)$, and provides potentials for all $dd^c$-closed $(1,1)$-forms on $X$. We relate our construction to lifts of the action of the automorphism group of a Calabi--Yau manifold to its universal torsor."
+ },
+ {
+  "id": "2607.05340v1",
+  "category": "math.AG",
+  "title": "A universal discriminant formula for pencils of quadrics",
+  "abstract": "Let $V$ be a vector space of dimension $n+1$ over an algebraically closed field $\\mathbb{k}$ of characteristic zero, and let $G_n = \\operatorname{Gr}(2,\\operatorname{Sym}^2V^\\vee)$ be the Grassmannian parametrizing pencils of quadrics in $\\mathbb{P}(V)\\cong \\mathbb{P}^n$. The determinant of the universal pencil defines a universal binary form of degree $n+1$. We prove that the divisor $\\mathcal{D}_n\\subseteq G_n$ of pencils whose determinant binary form has a multiple root has Chow class $[\\mathcal{D}_n]=n(n+1)\u03c3_1\\in A^1(G_n),$ where $\u03c3_1=c_1(S^\\vee)$ and $S$ is the tautological rank-two subbundle on $G_n$. More generally, the higher-contact loci of determinant binary forms are computed by a universal jet formula. We also formulate the determinant-root collision strata as refined pullbacks of the universal collision strata for binary forms. For $n=3$, the main formula recovers the class $12\u03c3_1$ for the boundary divisor in $\\operatorname{Gr}(2,10)$ that the author established in a prior paper."
+ },
+ {
+  "id": "2607.05228v1",
+  "category": "math.CT",
+  "title": "Centers of Algebras in Monoidal 2-Categories",
+  "abstract": "We introduce the left, right, and full center of an algebra in a monoidal 2-category and prove their Morita invariance. This categorifies Davydov's theory of centers of algebras in monoidal categories, and specializes to give a uniform, structural account of the Drinfeld center of a fusion category, the crossed braided Drinfeld center of a fusion category graded by a finite group, and the center of a central module monoidal category. Along the way, we develop a theory of 2-adjunctions between monoidal 2-categories and a base-change construction for module 2-categories."
+ },
+ {
+  "id": "2607.04015v1",
+  "category": "math.CT",
+  "title": "The Delayed Stabilizer ZX-Calculus",
+  "abstract": "Many stabilizer quantum error-correcting codes are built from a finite pattern repeated across space or time, such as lattice codes, translation-invariant graph states, and quantum convolutional codes. Ordinary stabilizer ZX-diagrams capture only finite truncations of such systems, obscuring the repeated structure that defines them. We introduce the delayed stabilizer ZX-calculus, a finite graphical language for these infinite, translation-invariant processes. It extends the odd-prime-dimensional stabilizer ZX-calculus with a single new generator, the delay, which feeds data from one time step to the next. We equip the calculus with two semantics. In the first semantics, we interpret the behaviour of a delayed ZX-diagram as an equivalence class of sequences of quantum channels; where two sequences are identified if they have the same information content. We show that the behaviour of a delayed ZX-diagram uniquely determines an infinite stabilizer group. In the second semantics, we interpret the delay as a formal variable, encoding the translation-invariant families of Pauli operators as generating functions. This allows us to represent a delayed ZX-diagram in terms of a tableau of generating functions, from which the infinite stabilizer group can be recovered. Finally, we give a complete axiomatization of the delayed stabilizer ZX-calculus, featuring generalised Euler decomposition and colour change rules. Using generalised forms of local complementation and pivoting, we reduce every diagram to a unique normal form. This establishes soundness, universality, and completeness for the generating tableau semantics."
+ },
+ {
+  "id": "2607.03996v1",
+  "category": "math.CT",
+  "title": "Finite Observations, Infinite Behaviour: bicategorical semantics for stateful monoidal processes",
+  "abstract": "Time-dependent processes are often described by machines with an internal state which is updated as time evolves. An external observer cannot see this state and learns about a process only through finite observations of its inputs and outputs, each of which imposes a constraint on the trajectories the process can exhibit. We introduce a semantic construction in which two stateful processes have the same behaviour when they have the same constraints, as determined by finite observations, independent of their internal state. The construction is defined over any preorder-enriched monoidal category with a compatible notion of discarding, which we call a discard bicategory, capturing partial, non-deterministic, probabilistic, and quantum processes. The resulting category of behaviours provides a functorial semantics for free feedback categories in the sense of Katis, Sabadini, and Walters. For non-deterministic systems, we prove a categorified compactness theorem: every compatible family of finite observations between compact Hausdorff spaces extends uniquely and functorially to an infinite closed relation. Restricted to affine relations over finite fields, the compactness theorem recovers Willems' notion of behaviour for linear time-invariant systems."
+ },
+ {
+  "id": "2607.02754v1",
+  "category": "math.CT",
+  "title": "Possibilistic collapse and extremality of simplicial distributions",
+  "abstract": "Consistent families of locally defined probability distributions that do not admit a joint global distribution are known as contextual, with primary examples arising in quantum theory. In this paper, we study such families of distributions using the theory of simplicial distributions, and further develop the theory for possibilistic distributions defined over the Boolean semiring. We characterize possibilistic collapses of simplicial distributions geometrically using bundle scenarios. Using this characterization together with a new connectivity condition on the total space of a bundle scenario, we provide a criterion for detecting extremal simplicial distributions. In parallel, we develop an analogous theory for presheaves on simplicial complexes, describe possibilistic collapses of empirical models on them using event scenarios together with a categorical extremality condition, and relate the two frameworks via a comparison result. We provide examples of contextual simplicial distributions that arise from our criteria on scenarios of interest in quantum foundations, such as Bell scenarios and boundaries of standard simplices, the latter connecting to Vorob'ev's classical theorem on acyclic complexes."
+ },
+ {
+  "id": "2607.05374v1",
+  "category": "math.NT",
+  "title": "The Minkowski grid has robustly many repeated distances",
+  "abstract": "We show that there exists a constant $\u03b4> 0$ such that for any positive integer $n$ there exists a set of $n$ points $P \\subset \\mathbb{R}^2$ with the following property: for every subset $A \\subseteq P$ of size $|A| \\geq 2$, \\[ \\max_{\u03bb>0} \\#\\{(a,b)\\in A \\times A: a\\ne b,\\ \\lvert a-b\\rvert=\u03bb\\} \\gtrsim \\frac{|A|^2}{n^{1-\u03b4}}.\\] Our result is a vertical amplification of a robust Ramanujan estimate recently established by Croot-Mao-Pohoata-Sheffer-Yip for arbitrary subsets of the ordinary square grid, and is inspired by recent constructions for the Erd\u0151s unit distance problem and the Elekes-R\u00f3nyai problem. Taking $A=P$, the inequality above gives a distance occurring $n^{1+\u03b4}$ times in $P$; thereby a scaled copy of $P$ is a counterexample for the unit-distance conjecture. In addition, the same inequality shows that (1) all subsets of $P$ of size $\\gtrsim n^{1-\u03b4}$ must contain isosceles triangles, and (2) all subsets of $P$ of size $\\gtrsim n^{1/2-\u03b4}$ must contain repeated distances. These features give polynomially improved estimates for old problems of Erd\u0151s. The existence of a set satisfying property (1) confirms a conjecture of Erd\u0151s from 1980, whereas the existence of a set with property (2) answers a question of Conlon-Fox-Gasarch-Harris-Ulrich-Zbarsky in the negative."
+ },
+ {
+  "id": "2607.05357v1",
+  "category": "math.NT",
+  "title": "An improved lower bound for odd integers not of the form $p+2^a+2^b$",
+  "abstract": "Let $x$ be sufficiently large and \\[ N(x)=\\big|\\bigl\\{n\\le x:n\\ \\text{is odd and }n\\ne p+2^a+2^b \\textrm{ with } p \\text{ a prime and } a,b\\in \\mathbb{N}\\bigr\\}\\big|. \\] Motivated by Crocker's result \\[ N(x)\\gg \\log\\log x, \\] Erd\\H os repeatedly asked whether there is an absolute constant $c_0$ such that $N(x)>c_0x$. Pan \\cite{Pan} proved in 2011 that \\[ N(x)\\gg x\\exp\\!\\left( -C_0\\frac{\\log\\log\\log\\log x}{\\log\\log\\log x}\\log x \\right), \\] where $C_0>0$ is an absolute constant. We improve on Pan's result by showing that, given any $\u03b7>0$, for all sufficiently large $x$, \\[ N(x)\\gg_\u03b7x\\exp\\left(-(4+\u03b7)\\frac{\\log\\log\\log x}{\\log\\log x}\\log x\\right). \\]"
+ },
+ {
+  "id": "2607.05305v1",
+  "category": "math.NT",
+  "title": "Iwasawa invariants of sharp/flat $2$-adic $L$-functions for quadratic twists of elliptic curves",
+  "abstract": "The aim of this paper is to study the variation under quadratic twists of the analytic Iwasawa invariants of Sprung's sharp/flat 2-adic $L$-functions for elliptic curves over $\\mathbb{Q}$ with good supersingular reduction at $2$. Under the hypothesis that the $\u03bc$-invariant vanishes, we obtain an explicit difference formula for the sharp/flat $\u03bb$-invariants. This formula gives a supersingular analogue of Matsuno's formula in the good ordinary case. As an application, following the method of Hatley-Ray, we obtain asymptotic lower bounds for the number of quadratic twists with prescribed sharp/flat $2$-adic Iwasawa $\u03bb$-invariant."
+ },
+ {
+  "id": "2607.05301v1",
+  "category": "math.NT",
+  "title": "Calculating the natural density of Mersenne numbers using nonstandard mathematical analysis",
+  "abstract": "Currently, among the open (unsolved) problems in number theory is the following: it is unknown what is the natural density of the sequence of Mersenne numbers in the set of natural numbers. In the paper, using methods of nonstandard mathematical analysis, we obtain the following equation: the natural density of Mersenne numbers (some infinitesimal value $e$) multiplied by the sum of the reciprocals of odd numbers (the infinitely large value \u03c9 = 1 + 1/3 + 1/5 + ...) is equal to 1, or the equality $e$ = 1/\u03c9 is true. In nonstandard analysis, the resulting infinitesimal numbers $e$ and 1/\u03c9 are considered equivalent. We obtained this result by working with a two-dimensional matrix of non-negative integers, where odd numbers are separated from even ones by the Pepis-Kalmar pairing function."
+ },
+ {
+  "id": "2607.05385v1",
+  "category": "gr-qc",
+  "title": "Charge-Sector Construction of the Type-IIB Axion--Dilaton Wormhole Partition Function",
+  "abstract": "I construct the Type-IIB axion--dilaton wormhole partition function from charge-sector data. In a chosen axion charge, equivalently form-field flux sector, the long-distance saddle calculation supplies a two-end operator term with coefficient matrix \\(C^{ij}_\u03bd\\). The labels \\(i,j\\) label end-insertion operators; the labels \\(A,B\\) label parent universes. Reduction data \\(b\\) convert this matrix into scalar coefficients \\(W_\u03bd[b]\\). The wormhole partition function in the theta variable is \\(Z_{\\rm wh}(\u03b8;b)=\\sum_\u03bdW_\u03bd[b]\\e^{i\u03bd\u03b8}\\). I analyze properties and constraints this coefficients satisfy: discrete-symmetry covariance, phase, absolute bounds, moment positivity, Cauchy--Schwarz inequalities for the unreduced coefficient matrix, complex-\\(\u03b8\\) domains, charge-lattice tails, and the dilute Bessel/Skellam limit. The \\(\u03b8\\)-dependence of the wormhole partition function is the Fourier transform of the charge-sector scalar coefficients."
+ },
+ {
+  "id": "2607.05368v1",
+  "category": "gr-qc",
+  "title": "Effects of Solar Wind Plasma Noise on Stochastic Gravitational Wave Background Searches with the LISA-Taiji Network",
+  "abstract": "The LISA-Taiji dual detector network improves millihertz SGWB sensitivity through cross correlation measurements. Solar wind plasma, however, can generate plasma noise correlated between detectors and bias SGWB cross correlation estimates. We use high time resolution electron density data from Wind/SWE, estimate the solar wind electron density fluctuation spectrum with the Lomb-Scargle method, and propagate the resulting plasma noise to the TDI A/E channels of the LISA-Taiji network. By including finite arm propagation, Taylor frozen flow spatial correlations, and the network overlap reduction response, we compute the SGWB parameter bias induced by interdetector plasma noise. Although the single detector plasma residual is below the reference noise, the component correlated between detectors can enter the SGWB cross correlation estimator directly. Under dual detector scale coverage, the plasma induced parameter bias for a power law SGWB can reach 12.73% of the corresponding Fisher parameter uncertainty. For M2/M3 cosmic string spectra, the bias in ln Gmu can reach 19.26% of the corresponding Fisher parameter uncertainty for the network configurations, observing times, and frequency bands considered here. These results show that the impact of solar wind plasma noise cannot be assessed from the single detector residual noise level alone. In LISA-Taiji SGWB searches, the interdetector correlated component of this noise can directly affect parameter estimation."
+ },
+ {
+  "id": "2607.05367v1",
+  "category": "gr-qc",
+  "title": "Investigating a Possible Variation of the Gravitational Constant Through Gas Mass Fraction Measurements and Type Ia Supernovae Observations",
+  "abstract": "In this paper, we investigate a possible time variation of the gravitational constant (G) using a non-parametric approach. Our main cosmological probe is the gas mass fraction of galaxy clusters measured from X-ray observations. We also account for the effect of a varying $G$ on the intrinsic luminosity of type Ia supernovae (SNe Ia) through the Chandrasekhar mass-luminosity relation. We consider a specific phenomenological scenario, motivated by some scalar-tensor and screened modified-gravity frameworks, in which the standardized luminosity of SNe Ia decreases with increasing Chandrasekhar mass. Using gas mass fraction measurements jointly with luminosity distances from the Pantheon+ compilation, we reconstruct the evolution of G through Gaussian Processes. Our results indicate that a constant gravitational coupling remains broadly consistent with the data, although mild low-redshift departures are allowed."
+ },
+ {
+  "id": "2607.05333v1",
+  "category": "gr-qc",
+  "title": "Structure of Anisotropic Magnetized Neutron Stars in f(R,T) Gravity with Realistic Equation of State",
+  "abstract": "In this study, within the framework of f(R,T) modified gravity, we investigate the influence of coupling parameter, magnetic field and anisotropy parameter on the neutron star structure. This work employs an accurate equation of state (EoS), derived from realistic microscopic calculations based on the AV18 nucleon-nucleon potential, to compute the structure of this compact object. Here, determination of Schwarzschild radius, compactness, gravitational surface redshift and Kretschmann scalar within the f(R, T) gravity, confirms that our theoretical results are consistent with the observational constraints. While established physical EoSs within the framework of Einstein gravity have successfully characterized a broad range of compact objects, they remain inadequate in explaining certain massive objects residing within the mass gap (2.5 to 5 Msun). We show that some compact objects residing in the mass gap interpreted as candidates of neutron stars within the framework of f(R, T) gravity. Finally, we compare our results with the observational data from LIGO/Virgo/KAGRA and NICER, setting the parameters of the f(R, T) theory and anisotropy to successfully reproduce the masses and radii of the GW170817, PSR J0952-0607 and PSR J0740+6620 and the masses of the secondary components of GW190814 and GW200210-092254."
+ },
+ {
+  "id": "2607.03995v1",
+  "category": "math.LO",
+  "title": "Merging $\\lim^1 \\mathbf{A} \\ne 0$ with other nonvanishing constructions",
+  "abstract": "We develop methods for forcing $\\lim^1 \\mathbf{A} \\ne 0$, where $\\mathbf{A}$ is a particular inverse system of abelian groups introduced by Marde\u0161i\u0107 and Prasolov in their computation of certain strong homology groups. These methods allow us to extend previous nonvanishing results of Casarosa and Lambie-Hanson for $\\lim^k \\mathbf{A}$ for $k \\geq 2$. Specifically we show that, for a given $n$, it is relatively consistent with ZFC that $\\mathfrak{b} = \\mathfrak{d} = \u03c9_n$ and $\\lim^k \\mathbf{A} \\ne 0$ whenever $1 \\leq k \\leq n$ (previously established with $2 \\leq k \\leq n$). We also show it is relatively consistent with ZFC that $\\mathfrak{b} = \\mathfrak{d} = \u03c9_{\u03c9+2}$ and $\\lim^k \\mathbf{A} \\ne 0$ for all $k \\geq 1$ (previously established with $k \\geq 2$). We also adapt proofs of Kamo to show that $\\lim^1 \\mathbf{A} = 0$ holds in many finite support iterated forcing extensions."
+ },
+ {
+  "id": "2607.03444v1",
+  "category": "math.LO",
+  "title": "On Determinacy for Cut and Choose Games of Uncountable Length",
+  "abstract": "We obtain results on cut and choose games for complete Boolean algebras. Zapletal proved that there is a Boolean algebra $\\mathbb{B}$ such that $\\mathcal{G}_\u03c9^\\textsf{candc}(\\mathbb{B})$, the version of the game which ends on the $\u03c9$'th round, is undetermined. We prove that, assuming the consistency of a proper class of supercompact cardinals, the limit version $\\mathcal{G}^{\\textsf{candc}}_{< \u03bb}(\\mathbb{B})$, in which there are $\u03bb$-many rounds but no concluding round, is consistently determined for all complete Boolean algebras $\\mathbb{B}$ and all successor cardinals $\u03bb$. In particular, this answers a question of Zapletal \\cite[Question 2]{Zapletal1995}. We also show that undetermined instances of the game $\\mathcal{G}^\\textsf{candc}_\u03bb(\\mathbb{B})$ follow from the approachability property, extending results of Dobrinen, and we prove that undetermined instances are compatible with $\\textsf{MM}^{++}$."
+ },
+ {
+  "id": "2607.03384v1",
+  "category": "math.LO",
+  "title": "Sum-product Phenomenon Via Dimension",
+  "abstract": "We show a sum-product phenomenon in fields equipped with abstract dimension theories, which simultaneously generalizes the dimensions in geometric theories and Hrushovski's coarse pseudo-finite dimensions. More precisely, we show that for type-definable sets of positive non-zero dimension, non-expansion in dimension of both the sumset and product set implies the existence of a definable field in the same dimension. Main ingredients of the proof include dimensional analogues of the Ruzsa triangle inequality and the Pl\u00fcnnecke-Ruzsa inequality."
+ },
+ {
+  "id": "2607.02870v1",
+  "category": "math.LO",
+  "title": "The theory of the Ziegler degrees",
+  "abstract": "The Ziegler degrees were introduced to characterize definability in group theory. In [JLSta], the authors show that the first order-theory of the Ziegler degrees (as a partial order) is undecidable. We improve this result, showing that the theory of the Ziegler degrees is bi-interpretable with true second-order arithmetic."
+ },
+ {
+  "id": "2607.05040v1",
+  "category": "cs.CC",
+  "title": "The Fine-Grained Complexity of Counting Hypergraph Motifs",
+  "abstract": "Introduced by Lee, Ko, and Shin (VLDB 2020), a hypergraph motif is a connected subhypergraph consisting of three hyperedges whose intersections satisfy a prescribed pattern. Such patterns are represented by Venn diagrams $\\mathcal{V}\\in\\{0,1\\}^7$, indicating which of the seven regions determined by three sets must be empty or non-empty. Lee et al. designed and implemented exact and approximate algorithms for counting, in a hypergraph $G$, the motifs specified by $\\mathcal{V}$; their algorithms run in worst-case cubic time in the number of hyperedges of $G$. This cubic worst case can occur even for hypergraphs of bounded rank, and already for $2$-uniform hypergraphs, that is, for simple graphs. In this work, we give a complete fine-grained picture of the parameterised complexity of exact hypergraph motif counting with respect to the rank of the input hypergraph. We use $\\tilde{O}$ to hide polylogarithmic factors in the input size. First, we show that every Venn diagram $\\mathcal{V}$ admits an exact counting algorithm running in FPT-near-quadratic time, \\[ f(\\mathsf{rank}(G))\\cdot \\tilde{O}(|E(G)|^2), \\] for some computable function $f$. Second, we precisely characterise when this can be improved to FPT-near-linear time. We prove that such an algorithm exists exactly for the degenerate Venn diagrams, namely those that force one of the three hyperedges to be fully contained in another. For all non-degenerate Venn diagrams, we show that no FPT-near-linear-time algorithm exists unless either the Triangle Hypothesis or the Hyperclique Hypothesis fails. Exact hypergraph motif counting is thus always fixed-parameter near-quadratic in the rank, and the degenerate Venn diagrams are precisely the cases admitting fixed-parameter near-linear time."
+ }
+]

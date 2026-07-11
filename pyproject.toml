@@ -21,6 +21,7 @@ dependencies = []   # pure stdlib. An OpenAI-compatible /v1/chat/completions end
 
 [project.optional-dependencies]
 embeddings = []     # any OpenAI-/Ollama-compatible embedding endpoint (set BOBBY_EMBED_URL); no python deps required.
+papers = ["pypdf"]  # only the arXiv-reading proof (wiki/proofs/squad_reads_pdfs.py) needs a PDF text extractor.
 
 [project.urls]
 Homepage = "https://github.com/Moun1r1/Bobby-GenAi-Squad"

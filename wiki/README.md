@@ -21,12 +21,17 @@ Run a proof from the repo root, e.g. `python wiki/proofs/organization_recursive.
 | `proofs/self_development.py` | full dev loop: discover → build+verify → prove | endpoint | `python wiki/proofs/self_development.py` |
 | `proofs/self_improve_connectivity.py` | the squad invents + builds + proves its own inter-agent connectivity | endpoint | `python wiki/proofs/self_improve_connectivity.py` |
 | `proofs/squad_reads_code.py` | **long-horizon:** a self-organizing squad reads whole codebases **end to end**, section-by-section, self-paced, with a **bounded prompt** (no context blowup) | endpoint + a corpus dir | `HORIZON_APPS=/path/to/repos python wiki/proofs/squad_reads_code.py` |
+| `proofs/squad_reads_pdfs.py` | **arXiv knowledge farm:** the squad downloads real arXiv papers, reads them section-by-section, and **builds transferable expert knowledge** — same long-horizon mechanism, on papers instead of code | endpoint + `pip install bobby-genai-squad[papers]` | `python wiki/proofs/squad_reads_pdfs.py` |
 
 ## Samples (captured from real runs)
 
 - [`samples/squad_reads_code_output.txt`](samples/squad_reads_code_output.txt) — two agents read `vue-core` and
   `django` **END-TO-END** (13/13, 15/15 sections) and evolved into codebase experts, while the prompt held only the
   current sections. Impossible to fake: the specialist identities cite exact internals of the real source.
+- [`samples/arxiv_squad_output.txt`](samples/arxiv_squad_output.txt) — 5 agents each read a **real arXiv paper**
+  (IDs verifiable on arxiv.org) section-by-section and evolved into specialists whose expertise cites the papers'
+  actual technical cores (Liénard–Wiechert fields / AdS4 Coulomb seed, Morita invariance of Drinfeld centers, the
+  quopit Pauli group). A model can't produce those specifics without reading the paper.
 - [`samples/KNOWLEDGE_MAP_25_oss_repos.md`](samples/KNOWLEDGE_MAP_25_oss_repos.md) — one persistent-self agent
   streamed **25 large OSS codebases** (hermes, redis, django, langchain, llama.cpp, tokio, polars, …) into a pinned
   index. Real, specific findings per repo.
