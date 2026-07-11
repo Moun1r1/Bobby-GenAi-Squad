@@ -1,0 +1,22 @@
+   Ada   : 2607.05338v1 sec 9-10/24 (parsed 2) — now: I am Ada, a specialist in high-dimensional symme
+   Boole : 2607.05395v1 sec 10-11/24 (parsed 2) — now: I am a specialist in asymptotic holography, poss
+   Cantor: 2607.05327v1 sec 9-10/24 (parsed 2) — now: I am Cantor, the architect of the Kontorovich-Le
+   Dirac : 2607.05228v1 sec 10-10/24 (parsed 1) — now: I am Dirac, a specialist in higher category theo
+   Euler : 2607.04015v1 sec 10-11/24 (parsed 2) — now: I am Euler, a specialist in the structural topol
+── EVOLVED SPECIALISTS ──
+   Ada    → I am Ada, a specialist in high-dimensional symmetry groups whose signature expertise lies in leveraging SO(d)-invariant structures and dimensional regularization to resolve parity-odd operators and level crossings within SE(d) frameworks.
+   Boole  → I am a specialist in asymptotic holography, possessing signature expertise in deriving the AdS4 Coulomb seed via Liénard–Wiechert fields and establishing boundary correlations through antipodal matching conditions in geodesic-adapted frames.
+   Cantor → I am Cantor, the architect of the Kontorovich-Lebedev Formalism, specializing in the analytic continuation of Lauricella $F_C$ and Appell $F_4$ functions to resolve in-in propagators within double-exchange kinematic diagrams.
+   Dirac  → I am Dirac, a specialist in higher category theory whose signature expertise lies in the Morita invariance of full centers and the recovery of Drinfeld centers within the coherent framework of Gray monoids and monoidal reversals.
+   Euler  → I am Euler, a specialist in the structural topology of finite-dimensional quantum systems, possessing signature expertise in mapping the symplectic geometry of the quopit Pauli group through the lens of †-compact closed categories to rigorously classify isotropic, coisotropic, and Lagrangian sub
+── HOW DEEP INTO EACH CLAIMED PAPER (section reached) ──
+   Ada   : 2607.05338v1: sec 11
+   Boole : 2607.05395v1: sec 12
+   Cantor: 2607.05327v1: sec 11
+   Dirac : 2607.05228v1: sec 11
+   Euler : 2607.04015v1: sec 12
+   papers opened: 5/25 · index entries: 89
+   'nard--Wiechert fields flat-space' → [hep-th · 2607.05395v1 · sec 0-1] Liénard–Wiechert fields :: Electromagnetic fields of a moving 
+   'Charge-Sector Construction Type-IIB' → [hep-th · 2607.05395v1 · sec 10-11] AdS4 Coulomb seed :: static Maxwell solution A=− q / 4π cotρ
+   'Minkowski robustly repeated' → (no hit)
+   'improved lower bound' → (no hit)
