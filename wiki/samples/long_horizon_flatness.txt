@@ -1,0 +1,18 @@
+[horizon] 25 project units
+[10/25] flask                                            pin_ptoks=1810   naive=14727   stored=9   val=high
+[11/25] grafana                                          pin_ptoks=3172   naive=16477   stored=10  val=high
+[12/25] hermes                                           pin_ptoks=3020   naive=18227   stored=11  val=high
+[13/25] httpx                                            pin_ptoks=3149   naive=19977   stored=12  val=high
+[14/25] langchain                                        pin_ptoks=3235   naive=21727   stored=13  val=high
+[15/25] llama.cpp                                        pin_ptoks=3580   naive=23477   stored=14  val=high
+[16/25] neovim                                           pin_ptoks=2711   naive=24325   stored=15  val=high
+[17/25] ollama                                           pin_ptoks=3993   naive=26075   stored=16  val=high
+[18/25] opencode                                         pin_ptoks=3896   naive=27825   stored=17  val=high
+[19/25] polars                                           pin_ptoks=4070   naive=29575   stored=18  val=high
+[20/25] prometheus                                       pin_ptoks=3764   naive=31325   stored=19  val=high
+[21/25] react                                            pin_ptoks=3953   naive=33075   stored=20  val=high
+[22/25] redis                                            pin_ptoks=4300   naive=34825   stored=21  val=high
+[23/25] svelte                                           pin_ptoks=4348   naive=36575   stored=22  val=high
+[24/25] terraform                                        pin_ptoks=4392   naive=38325   stored=23  val=high
+[25/25] tokio                                            pin_ptoks=4689   naive=40075   stored=24  val=high
+[horizon] pinned prompt tokens: min=1681 max=4689 (bounded)  |  naive-counterfactual end=40075  →  8.5x
