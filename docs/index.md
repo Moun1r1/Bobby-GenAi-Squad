@@ -23,6 +23,70 @@ export BOBBY_EMBED_URL="http://localhost:11434/api/embed"   # optional
 
 ---
 
+## How it works — the generative engine
+
+No static prompts, no scripted pipeline. Each agent runs a self-directed loop and **chooses its own move** — the
+behavior comes from its *self* + its *tools* + what it has read, never from a template.
+
+<pre class="mermaid">
+flowchart LR
+  G["select_target"] --> P["make_plan"] --> C["carry_out<br/>with tools"] --> R["record →<br/>pinned tier"] --> G
+  C -. self-selected move .-> M(["investigate · invent · compose · critique · organize"])
+</pre>
+
+## The agent *becomes* the data — a persona from what it reads
+
+The core generative idea: an agent starts **blank** and **crystallizes into a specialist grounded in the data it
+reads**. Its identity is a live compression of the material — which it then carries to other agents and other fields.
+
+<pre class="mermaid">
+flowchart LR
+  A["blank agent<br/><i>indexer, no specialty</i>"] -->|reads section by section| D[("real data<br/>papers · code")]
+  D -->|extract concepts| S[["shared semantic store"]]
+  D ==>|persona crystallizes| E["specialist agent<br/><b>Flask architecture expert</b>"]
+  E -->|carries knowledge| T["transfer across agents & domains"]
+  S --> T
+</pre>
+
+Real, from live runs — the persona cites the source's internals because it *is* a compression of the source:
+
+| the agent read… | …and became (persona from data) |
+|---|---|
+| Flask source, end to end | *"Flask architecture specialist — lifecycle of the app object, `remove_ctx`/`add_ctx` decorators"* |
+| a real hep-th paper | *"asymptotic-holography specialist — AdS4 Coulomb seed via Liénard–Wiechert fields, antipodal matching"* |
+| a category-theory paper | *"higher category theory — Morita invariance of full centers, Drinfeld centers within Gray monoids"* |
+
+## Long horizon without context blowup
+
+One persistent-self agent streams a huge corpus through a **tiny working window** while the accumulated knowledge
+lives in a **pinned tier** compaction never touches — the prompt stays flat no matter how long the horizon.
+
+<pre class="mermaid">
+flowchart TB
+  ITEM["next unit"] --> CUR
+  subgraph work["WORKING window — wiped each item (bounded)"]
+    CUR["current section only"]
+  end
+  subgraph pinned["PINNED tier — survives compaction (the payload)"]
+    IDX["accumulated index / expert knowledge"]
+  end
+  CUR --> IDX
+  CUR -. compact .-> X["(wiped)"]
+</pre>
+
+<svg viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;background:#fff;border:1px solid #e5e5e5;border-radius:8px">
+  <text x="55" y="22" font-size="13" fill="#24292f" font-weight="bold">Prompt tokens across 25 streamed codebases</text>
+  <line x1="60" y1="40" x2="60" y2="220" stroke="#bbb"/><line x1="60" y1="220" x2="540" y2="220" stroke="#bbb"/>
+  <polyline points="60,215 500,55" fill="none" stroke="#d1242f" stroke-width="2.5"/>
+  <polyline points="60,206 130,199 200,204 270,201 340,199 410,198 480,196 540,195" fill="none" stroke="#1a7f37" stroke-width="2.5"/>
+  <circle cx="500" cy="55" r="3" fill="#d1242f"/><text x="360" y="52" font-size="11" fill="#d1242f">naive keep-everything → ~40,075 tok</text>
+  <text x="300" y="190" font-size="11" fill="#1a7f37">persistent-self pinned → ≤ 4,689 tok (bounded)</text>
+  <text x="300" y="245" font-size="11" fill="#57606a" text-anchor="middle">codebases streamed  1 → 25</text>
+  <text x="510" y="90" font-size="13" fill="#1a7f37" font-weight="bold">8.5×</text>
+</svg>
+
+---
+
 ## Features
 
 | primitive | what it does |
@@ -42,6 +106,15 @@ export BOBBY_EMBED_URL="http://localhost:11434/api/embed"   # optional
 ## Gains (proven, with honest kills)
 
 Every gain went through `prove` (headroom + negative control + CI). Most proposals **fail** a fair A/B — that's the point.
+
+<svg viewBox="0 0 600 210" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;background:#fff;border:1px solid #e5e5e5;border-radius:8px">
+  <text x="14" y="46" font-size="12" fill="#24292f">Memory-Gate</text><rect x="170" y="34" width="363" height="18" fill="#1a7f37" rx="2"/><text x="540" y="47" font-size="11" fill="#1a7f37">+191%</text>
+  <text x="14" y="80" font-size="12" fill="#24292f">Active-Design</text><rect x="170" y="68" width="154" height="18" fill="#1a7f37" rx="2"/><text x="331" y="81" font-size="11" fill="#1a7f37">−81% probes</text>
+  <text x="14" y="114" font-size="12" fill="#24292f">Active repulsion</text><rect x="170" y="102" width="141" height="18" fill="#1a7f37" rx="2"/><text x="318" y="115" font-size="11" fill="#1a7f37">+74%</text>
+  <text x="14" y="148" font-size="12" fill="#24292f">Self-evolving memory</text><rect x="170" y="136" width="48" height="18" fill="#1a7f37" rx="2"/><text x="225" y="149" font-size="11" fill="#1a7f37">+25%</text>
+  <text x="14" y="182" font-size="12" fill="#24292f">Idea-space gate</text><rect x="170" y="170" width="43" height="18" fill="#1a7f37" rx="2"/><text x="220" y="183" font-size="11" fill="#1a7f37">+22.5%</text>
+  <text x="14" y="20" font-size="13" fill="#24292f" font-weight="bold">Proven WIRE gains (vs a fair baseline, negative-control passed)</text>
+</svg>
 
 | mechanism | verdict | result |
 |---|---|---|
@@ -119,3 +192,8 @@ optimization  →  signal-proc: apply Lagrangian dual "Performance Estimation" c
 4. **Guard-first** — guardable mistakes live in deterministic code.
 
 _MIT licensed._
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+</script>
