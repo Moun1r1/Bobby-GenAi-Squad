@@ -4,18 +4,12 @@ title: Bobby GenAi Squad
 
 # Bobby GenAi Squad
 
-**A self-organizing generative-agent squad.** Persistent-self agents that coordinate on a recursive shared board,
-verify by outcome (not by prose), and prove their gains — because **organization beats raw intelligence**.
+**Self-organizing generative agents that read any knowledge sector end to end without context blowup, transfer what
+they learn across domains, and prove their gains.** Persistent-self agents coordinate on a recursive shared board,
+verify by outcome (not by prose), and hold state across a long horizon in a pinned tier compaction never touches.
 
-A solo one-pass LLM call forgets by design, even at frontier scale. Wins come from *organization*. Measured on the
-same model, varying only how the agents were organized:
-
-| organization | function-coverage |
-|---|---|
-| raw 1-pass | **21%** |
-| uncoordinated squad + shared memory | 56% |
-| flat coordination | 76% |
-| **recursive coordination** | **96%** |
+They read whole codebases and papers section-by-section — self-paced — while the prompt stays flat, then carry the
+knowledge between agents and across fields (physics ↔ economics, neuroscience ↔ AI, …).
 
 Pure Python stdlib. Talks to any OpenAI-compatible `/v1/chat/completions` endpoint (local or hosted).
 **[Code on GitHub »](https://github.com/Moun1r1/Bobby-GenAi-Squad)**
@@ -51,7 +45,6 @@ Every gain went through `prove` (headroom + negative control + CI). Most proposa
 
 | mechanism | verdict | result |
 |---|---|---|
-| Organization (recursive vs solo) | **WIRE** | 21% → 96% coverage |
 | Memory-Gate (importance-gated consolidation) | **WIRE** | +191% |
 | Active repulsion (farthest-point frontier) | **WIRE** | +74% concept coverage |
 | Self-evolving memory policy | **WIRE** | +25% retention / +12.5% generation (neg-control passed) |
@@ -72,13 +65,14 @@ the unfakeable parts).
 |---|---|---|
 | [proposals_gain.py](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/proposals_gain.py) | Memory-Gate WIRE +191%, Active-Design WIRE, CWBU DELETE | deterministic |
 | [memory_policy_gain.py](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/memory_policy_gain.py) | self-evolving memory WIRE; non-predictive control DELETE | deterministic |
-| [organization_recursive.py](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/organization_recursive.py) | organization beats intelligence | endpoint |
+| [organization_recursive.py](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/organization_recursive.py) | recursive coordination improves coverage | endpoint |
 | [cross_domain.py](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/cross_domain.py) | one engine, any behavior the request asks | endpoint |
 | [self_review.py](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/self_review.py) | metacognition: detect a peer's bias & frontier | endpoint |
 | [self_development.py](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/self_development.py) | full dev loop: discover → build+verify → prove | endpoint |
 | [squad_reads_code.py](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/squad_reads_code.py) | long-horizon: read whole codebases end to end, bounded prompt | endpoint |
 | [squad_reads_pdfs.py](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/squad_reads_pdfs.py) | arXiv knowledge farm | endpoint + `[papers]` |
 | [transfer_knowledge.py](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/transfer_knowledge.py) | transferable knowledge across agents & domains | endpoint + embedder |
+| [cross_sector_knowledge.py](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/cross_sector_knowledge.py) | reads **12 knowledge sectors** and bridges ideas between distant fields | endpoint + embedder |
 
 ### Real captured results
 
@@ -103,11 +97,25 @@ Dirac → higher category theory … Morita invariance of full centers … Drinf
 **Transferable knowledge** — Cantor (read only a *logic* paper) correctly explained a *physics* paper it never read,
 from the shared store (grounded=True); and an agent bridged *"antipodal matching"* from hep-th into number theory.
 
+**Cross-sector knowledge** — the squad read one real paper from **12 sectors** (AI, neuroscience, economics,
+biology, finance, medical physics, materials, optimization, signal processing, linguistics, complex systems,
+statistics) and bridged distant fields by meaning, grounded in recalled concepts:
+```
+neuroscience  →  economics : model market consensus as a "bound state" that emerges only when attention
+                             and information depth exceed a critical threshold (from "Conscious Access")
+complex systems →  AI      : model attention as complex-valued energy landscapes that filter and bind
+                             sensory inputs (from the "Non-Hermitian Potential Well" formalism)
+optimization  →  signal-proc: apply Lagrangian dual "Performance Estimation" certificates to bound a
+                             deep-learning demodulation pipeline
+```
+
 ---
 
 ## Design rules
 
-1. **Organization beats raw intelligence.** 2. **No static prompts / hardcoded roles** — self + tools + move-space.
-3. **Verify by outcome.** 4. **Prove, don't claim.** 5. **Guard-first** — guardable mistakes live in code.
+1. **No static prompts / hardcoded roles** — capability from self + tools + move-space; agents self-select their move.
+2. **Verify by outcome** — a real run / strict judge, never the model declaring "done".
+3. **Prove, don't claim** — every gain goes through `prove` (headroom + negative control + CI).
+4. **Guard-first** — guardable mistakes live in deterministic code.
 
 _MIT licensed._

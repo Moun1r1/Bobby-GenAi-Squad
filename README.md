@@ -1,20 +1,12 @@
 # Bobby GenAi Squad
 
-**A self-organizing generative-agent squad.** Persistent-self agents that coordinate on a recursive shared board,
-verify by outcome (not by prose), and prove their gains — because **organization beats raw intelligence.**
+**Self-organizing generative agents that read any knowledge sector end to end without context blowup, transfer what
+they learn across domains, and prove their gains.** Persistent-self agents coordinate on a recursive shared board,
+verify by outcome (not by prose), and hold state across a long horizon in a pinned tier compaction never touches.
 
-A solo one-pass LLM call forgets by design, even at frontier scale. Wins come from *organization*. Measured on the
-same model, varying only how the agents were organized:
-
-| organization | function-coverage |
-|---|---|
-| raw 1-pass | **21%** |
-| uncoordinated squad + shared memory | 56% |
-| flat coordination | 76% |
-| **recursive coordination** | **96%** |
-
-There is no orchestrator and no assigned roles — just a self-organizing swarm, a recursive shared board, and a
-verify gate, self-scaled to the task.
+They read whole codebases and papers section-by-section — self-paced — while the prompt stays flat, then carry the
+knowledge between agents and across fields (physics ↔ economics, neuroscience ↔ AI, …). No orchestrator, no assigned
+roles — a self-organizing swarm, a recursive shared board, and a verify gate, self-scaled to the task.
 
 Pure Python standard library. It talks to any OpenAI-compatible `/v1/chat/completions` endpoint (local or hosted).
 
@@ -92,8 +84,7 @@ Everything is a reusable primitive imported from `bobby_squad` — the examples 
 
 ## The design rules it was built on
 
-1. **Organization beats raw intelligence** — self-organize a squad; don't rely on one bigger call.
-2. **No static prompts, no hardcoded roles** — capability comes from a rich *self* + real *tools* + an open
+1. **No static prompts, no hardcoded roles** — capability comes from a rich *self* + real *tools* + an open
    *move-space*; the agent self-selects mine / invent / compose / critique / organize. A "critic" is a *move*, not a
    persona.
 3. **Verify by outcome** — a real run / a strict judge, never the model declaring "done" in prose.
