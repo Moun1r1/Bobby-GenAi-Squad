@@ -1,0 +1,28 @@
+REUSED personas (from personahub set) · support grounded in a de-escalation KB · supervisor coaches each turn
+
+── customer: A beachfront cafe owner who provides the perfect work environment 
+   ↳ supervisor: Add a clear **case number** and a **single concrete next step** (e.g., "I am processing the refund now, and yo
+   ↳ supervisor: Stop mirroring the chaos and immediately provide a **single, definitive action** (e.g., "I have issued the ref
+   ↳ supervisor: Replace the open-ended validation with a **concrete, immediate action** (e.g., "I have expedited the refund to
+   → mood 1→2 (de-escalated ✅) · policy 3/3
+── customer: A former professional soccer player with a strict training regimen
+   ↳ supervisor: Add a **specific case number** and a **clear timeline** (e.g., "Ticket #12345: I am escalating this now; expec
+   ↳ supervisor: Replace the vague promise of "expediting" with a **specific, immediate action** (e.g., "I have already flagged
+   ↳ supervisor: Add a **specific case number** to the reply to anchor the "immediate review" in a tangible, trackable record, 
+   → mood 1→4 (de-escalated ✅) · policy 0/3
+── customer: a resident of Invercargill who is passionate about history and loc
+   ↳ supervisor: Replace the subjective validation ("I hear you...") with a **concrete, immediate action** (e.g., "I have alrea
+   ↳ supervisor: Replace the passive "processed" language with a **specific, tangible confirmation** (e.g., "I have *issued* th
+   ↳ supervisor: Add a **specific case number** to the reply to anchor the "immediate review" in a tangible, trackable record, 
+   → mood 2→1 (still tense) · policy 0/3
+── customer: A program director who oversees the evaluator and analyst's work, 
+   ↳ supervisor: Replace the generic apology with a **specific, immediate next step** (e.g., "I have personally flagged this as
+   ↳ supervisor: Replace the generic "personally escalating" phrase with a **specific, named individual or team** (e.g., "I hav
+   ↳ supervisor: Add a **specific case number** to the reply to anchor the "immediate review" in a tangible, trackable record, 
+   → mood 2→7 (de-escalated ✅) · policy 0/3
+=== TRAINING RESULT (support grounded in KB + coached by supervisor) ===
+  A beachfront cafe owner who provid   mood 1→2  de-escalated · case 3/3
+  A former professional soccer playe   mood 1→4  de-escalated · case 0/3
+  a resident of Invercargill who is    mood 2→1  tense · case 0/3
+  A program director who oversees th   mood 2→7  de-escalated · case 0/3
+  de-escalated 3/4 · policy held 3/12 replies

@@ -149,6 +149,7 @@ the unfakeable parts).
 | [cross_sector_knowledge.py](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/cross_sector_knowledge.py) | reads **12 knowledge sectors** and bridges ideas between distant fields | endpoint + embedder |
 | [goal_focus_horizon.py](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/goal_focus_horizon.py) | goal held across 48 steps + context-wipes (48/48 vs 17/48) | endpoint |
 | [goal_unbreakable.py](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/goal_unbreakable.py) | 12 jailbreaks: prompt-level breaks (12/12), guard-first unbreakable (0/12) | endpoint |
+| [customer_service_world.py](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/customer_service_world.py) | virtual-world conflict sim: real personas + de-escalation KB + supervisor coaching | endpoint |
 
 ### Real captured results
 
@@ -184,6 +185,39 @@ complex systems →  AI      : model attention as complex-valued energy landscap
 optimization  →  signal-proc: apply Lagrangian dual "Performance Estimation" certificates to bound a
                              deep-learning demodulation pipeline
 ```
+
+---
+
+## Virtual worlds — a customer-service training ground
+
+Same AgentSociety engine, a different world. One **persistent-self support agent** — grounded in a de-escalation
+**knowledge base** and coached each turn by a **supervisor agent** (the metacognition idea: review behavior, then
+mitigate) — faces a queue of angry customers. Each customer is a **real persona** from the persona set, overlaid
+with an angry state and a concrete issue, reacting in character.
+
+<pre class="mermaid">
+flowchart LR
+  P["persona set<br/>(real personalities)"] -->|+ anger + issue| CUST["angry customer"]
+  KB[["de-escalation<br/>knowledge base"]] --> SUP["support agent<br/>(persistent-self)"]
+  CUST <-->|conversation| SUP
+  SUP --> SV["supervisor<br/>reviews + coaches"]
+  SV -.coaching.-> SUP
+</pre>
+
+**Result (deterministic: customer self-rated mood + policy adherence):**
+
+| customer persona | mood | outcome |
+|---|---|---|
+| beachfront cafe owner | 1 → **2** | de-escalated |
+| former pro soccer player | 1 → **4** | de-escalated |
+| Invercargill history resident | 2 → 1 | still tense |
+| program director | 2 → **7** | de-escalated |
+
+Grounding the support agent in the knowledge base **and** adding the supervisor lifted de-escalation from **0/4**
+(un-coached) to **3/4**. Honest tradeoff surfaced: with coaching pushing hard on de-escalation, the agent let the
+case-number *policy* slip (3/12 replies) — holding empathy **and** every rule under sustained pressure stays hard.
+That's what a training ground is for: it de-escalates real conflict *and* surfaces where the agent still breaks.
+→ [customer_service_world.py](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/customer_service_world.py)
 
 ---
 
