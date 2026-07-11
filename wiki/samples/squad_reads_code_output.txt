@@ -1,0 +1,30 @@
+SQUAD READS REAL CODE — 25 codebases, 2 agents, 16 rounds, self-organizing.
+[round 1/16] index=3 · claimed=2/25
+[round 2/16] index=8 · claimed=2/25
+[round 3/16] index=16 · claimed=2/25
+[round 4/16] index=20 · claimed=2/25
+[round 5/16] index=24 · claimed=2/25
+[round 6/16] index=26 · claimed=2/25
+[round 7/16] index=32 · claimed=2/25
+[round 8/16] index=33 · claimed=2/25
+[round 9/16] index=35 · claimed=3/25
+[round 10/16] index=40 · claimed=4/25
+[round 11/16] index=45 · claimed=4/25
+[round 12/16] index=47 · claimed=4/25
+[round 13/16] index=54 · claimed=4/25
+[round 14/16] index=58 · claimed=4/25
+[round 15/16] index=62 · claimed=4/25
+[round 16/16] index=69 · claimed=4/25
+── HOW DEEP INTO EACH CLAIMED CODEBASE (section reached / total) ──
+   Ada    core           sec 13/13  ✅ END-TO-END
+   Ada    flask          sec 11/15  (in progress)
+   Boole  django         sec 15/15  ✅ END-TO-END
+   Boole  fastapi        sec 11/15  (in progress)
+── EVOLVED SPECIALISTS ──
+   Ada    → I am Ada, a Flask architecture specialist with signature expertise in the lifecycle of the Flask application object, specifically mastering context management through the remove_ctx and add_ctx decorators, subclass initialization mechanics, and configuration handling.
+   Boole  → Boole is a FastAPI and Pydantic specialist who excels at architecting robust, type-safe RESTful APIs and CLI applications with precise data validation and seamless cloud integration.
+   codebases opened: 4/25 · index entries: 69
+   query 'airflow' → (no hit)
+   query 'bevy' → (no hit)
+   query 'cargo' → (no hit)
+   query 'core' → [core · sec 1-2] vue-server-renderer -> @vue/server-renderer :: Core SSR package replacement; Vu

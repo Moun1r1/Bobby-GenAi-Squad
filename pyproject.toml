@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bobby-genai-squad"
+version = "0.1.0"
+description = "A self-organizing generative-agent squad: persistent-self agents that coordinate on a recursive shared board, verify by outcome, and prove their gains — organization beats raw intelligence."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Moun1r1" }]
+keywords = ["llm", "agents", "multi-agent", "self-organizing", "persistent-self", "generative-agents"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Intended Audience :: Developers",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = []   # pure stdlib. An OpenAI-compatible /v1/chat/completions endpoint is all you need at runtime.
+
+[project.optional-dependencies]
+embeddings = []     # any OpenAI-/Ollama-compatible embedding endpoint (set BOBBY_EMBED_URL); no python deps required.
+
+[project.urls]
+Homepage = "https://github.com/Moun1r1/Bobby-GenAi-Squad"
+Source = "https://github.com/Moun1r1/Bobby-GenAi-Squad"
+
+[tool.setuptools]
+packages = ["bobby_squad"]

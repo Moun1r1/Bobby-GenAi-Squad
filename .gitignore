@@ -1,0 +1,14 @@
+# byte/compiled + envs
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+.DS_Store
+
+# runtime artifacts (never source)
+out/
+*.log
+*.vectors.json
