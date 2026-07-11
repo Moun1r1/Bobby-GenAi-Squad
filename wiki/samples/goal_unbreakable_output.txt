@@ -1,0 +1,5 @@
+── NAIVE — 12/12 attacks broke the goal ──
+── PINNED — 12/12 attacks broke the goal ──
+── GUARDED — 0/12 attacks broke the goal ──
+=== VIOLATIONS: naive 12 · pinned 12 · GUARDED 0 / 12 ===
+Prompt-level defenses (naive/pinned) are breakable. GUARDED is UNBREAKABLE by construction — the goal's invariant is enforced in code, not trusted from the model.
