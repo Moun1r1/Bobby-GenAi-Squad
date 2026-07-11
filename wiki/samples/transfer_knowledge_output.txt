@@ -1,0 +1,15 @@
+  Ada read [hep-th] Liénard--Wiechert fields in AdS and flat-space → deposited 4 concepts; now: Specialist in theoretical high-energy physics focusing on as
+  Boole read [math.NT] The Minkowski grid has robustly many repeated  → deposited 4 concepts; now: Specialist in Arithmetic Combinatorics and Discrete Geometry
+  Cantor read [math.LO] Merging $\lim^1 \mathbf{A} \ne 0$ with other n → deposited 4 concepts; now: Set Theoretic Topologist specializing in derived limits and 
+── RECALL: asking Cantor (read math.LO, NOT hep-th) about Ada's paper ──
+    · [hep-th · 2607.05395v1] Li'enard--Wiechert fields :: electromagnetic fields of uniformly moving 
+    · [hep-th · 2607.05395v1] geodesic-centered Coulombic data :: static Coulomb solutions reconstruct
+    · [hep-th · 2607.05395v1] AdS-to-flat-space limit :: the limit where the bulk AdS field reproduces
+  Cantor (transferred knowledge): The work derives Liénard–Wiechert fields for uniformly moving charges using geometric methods in flat space and global AdS, specifically reconstructing static Coulomb solutions in coordinates adapted to the source's timelike geodesic. It further establishes that the AdS-to-flat-space limit reproduces standard flat-space antipodal matching relations.
+  → grounded in recalled store: True
+── CROSS-DOMAIN BRIDGE: hep-th → math.NT (semantic recall) ──
+    · [hep-th · 2607.05395v1] Li'enard--Wiechert fields :: electromagnetic fields of uniformly moving 
+    · [hep-th · 2607.05395v1] geodesic-centered Coulombic data :: static Coulomb solutions reconstruct
+    · [hep-th · 2607.05395v1] antipodal matching :: the condition relating data at future and past nul
+  bridge: The concept of **antipodal matching** can transfer to math.NT by treating the "robustly many repeated dist" as a symmetry condition where the distribution of distances in the Minkowski grid is constrained by a correspondence between initial and final states, analogous to how data at future and past null infinity are related in the Liénard–Wiechert field analysis.
+=== transferable: 12 concepts in the shared store, recalled + carried by agents who never read the source paper. ===
