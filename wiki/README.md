@@ -22,6 +22,7 @@ Run a proof from the repo root, e.g. `python wiki/proofs/organization_recursive.
 | `proofs/self_improve_connectivity.py` | the squad invents + builds + proves its own inter-agent connectivity | endpoint | `python wiki/proofs/self_improve_connectivity.py` |
 | `proofs/squad_reads_code.py` | **long-horizon:** a self-organizing squad reads whole codebases **end to end**, section-by-section, self-paced, with a **bounded prompt** (no context blowup) | endpoint + a corpus dir | `HORIZON_APPS=/path/to/repos python wiki/proofs/squad_reads_code.py` |
 | `proofs/squad_reads_pdfs.py` | **arXiv knowledge farm:** the squad downloads real arXiv papers, reads them section-by-section, and **builds transferable expert knowledge** — same long-horizon mechanism, on papers instead of code | endpoint + `pip install bobby-genai-squad[papers]` | `python wiki/proofs/squad_reads_pdfs.py` |
+| `proofs/transfer_knowledge.py` | **transferable knowledge:** a concept one agent read from a paper is recalled by *another* agent who never read it, and **carried across domains** (physics → number theory) via the shared semantic store | endpoint + embedder | `python wiki/proofs/transfer_knowledge.py` |
 
 ## Samples (captured from real runs)
 
@@ -32,6 +33,9 @@ Run a proof from the repo root, e.g. `python wiki/proofs/organization_recursive.
   (IDs verifiable on arxiv.org) section-by-section and evolved into specialists whose expertise cites the papers'
   actual technical cores (Liénard–Wiechert fields / AdS4 Coulomb seed, Morita invariance of Drinfeld centers, the
   quopit Pauli group). A model can't produce those specifics without reading the paper.
+- [`samples/transfer_knowledge_output.txt`](samples/transfer_knowledge_output.txt) — Cantor (read only a logic
+  paper) correctly explains a *physics* paper it never read, from the shared store (grounded=True), and an agent
+  bridges "antipodal matching" from hep-th into number theory. Knowledge transferred across agents and domains.
 - [`samples/KNOWLEDGE_MAP_25_oss_repos.md`](samples/KNOWLEDGE_MAP_25_oss_repos.md) — one persistent-self agent
   streamed **25 large OSS codebases** (hermes, redis, django, langchain, llama.cpp, tokio, polars, …) into a pinned
   index. Real, specific findings per repo.
