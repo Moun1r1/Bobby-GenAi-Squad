@@ -1,0 +1,23 @@
+  read [           AI / computer science]  +0 concepts
+  read [        neuroscience / cognition]  +0 concepts
+  read [                       economics]  +3 concepts
+  read [        statistics / methodology]  +3 concepts
+  read [            quantitative biology]  +3 concepts
+  read [                         finance]  +0 concepts
+  read [                 medical physics]  +3 concepts
+  read [               materials science]  +3 concepts
+  read [               optimization / OR]  +3 concepts
+  read [ signal processing / engineering]  +3 concepts
+  read [       computational linguistics]  +3 concepts
+  read [                 complex systems]  +3 concepts
+── CROSS-SECTOR BRIDGES (27 concepts in the shared store) ──
+  neuroscience / cognition  →  economics
+     The concept of **Conscious Access** from neuroscience can transfer to economics by modeling market consensus as a "bound state" that emerges only when individual attention and information depth exceed a critical threshold, thereby explaining sudden, discontinuous shifts in asset pricing.
+  finance  →  quantitative biology
+     The **ConRad** framework from medical physics, which uses mask-derived covariates to construct adaptive prediction intervals, can be transferred to quantitative biology to create more accurate, adaptive prediction intervals for the stage-structured SIR model by treating demographic strata as covariates that dynamically adjust uncertainty bounds.
+  optimization / OR  →  signal processing / engineering
+     The **Performance Estimation Problems** concept can transfer to signal processing by applying structured Lagrangian dual certificates to discover performance bounds and complexity analyses for the deep learning pipeline in the Joint NBI Cancellation and Soft Demodulation Framework.
+  complex systems  →  AI / computer science
+     The **Non-Hermitian Potential Well** concept can transfer to AI by modeling attention mechanisms as complex-valued energy landscapes that govern how sensory inputs are filtered and bound into coherent representations, bridging the gap between raw data encoding and conscious-like access.
+  medical physics  →  statistics / methodology
+     The **ConRad** framework’s use of mask-derived covariates to construct adaptive prediction intervals can transfer to statistics by demonstrating how geometric or structural metadata from segmentation tasks can be integrated as auxiliary covariates to enhance the efficiency and adaptivity of conformal prediction intervals.

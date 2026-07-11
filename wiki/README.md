@@ -15,7 +15,7 @@ Run a proof from the repo root, e.g. `python wiki/proofs/organization_recursive.
 |---|---|---|---|
 | `proofs/proposals_gain.py` | fair A/Bs: Memory-Gate **WIRE +191%**, Active-Design **WIRE**, CWBU **DELETE** | deterministic | `python wiki/proofs/proposals_gain.py` |
 | `proofs/memory_policy_gain.py` | self-evolving memory retention **WIRE**, non-predictive negative control **DELETE** | deterministic | `python wiki/proofs/memory_policy_gain.py` |
-| `proofs/organization_recursive.py` | organization beats intelligence: recursive coordination coverage | endpoint | `python wiki/proofs/organization_recursive.py` |
+| `proofs/organization_recursive.py` | recursive coordination improves coverage vs a solo pass | endpoint | `python wiki/proofs/organization_recursive.py` |
 | `proofs/cross_domain.py` | one engine, any behavior the request asks — strict-judge graded | endpoint | `python wiki/proofs/cross_domain.py` |
 | `proofs/self_review.py` | metacognition: an agent detects a peer's bias & frontier from its real trace | endpoint | `python wiki/proofs/self_review.py` |
 | `proofs/self_development.py` | full dev loop: discover → build+verify → prove | endpoint | `python wiki/proofs/self_development.py` |
