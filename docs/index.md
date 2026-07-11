@@ -12,7 +12,8 @@ They read whole codebases and papers section-by-section — self-paced — while
 knowledge between agents and across fields (physics ↔ economics, neuroscience ↔ AI, …).
 
 Pure Python stdlib. Talks to any OpenAI-compatible `/v1/chat/completions` endpoint (local or hosted).
-**[Code on GitHub »](https://github.com/Moun1r1/Bobby-GenAi-Squad)**
+
+**[Code on GitHub »](https://github.com/Moun1r1/Bobby-GenAi-Squad)** · **[The generative engine, layer by layer »](engine)**
 
 ```bash
 pip install -e .
