@@ -1,0 +1,26 @@
+{
+  "targets_self_selected": 4,
+  "plan_steps_generated": 16,
+  "cycles": 4,
+  "moves_total": 13,
+  "distinct_moves": 7,
+  "move_distribution": {
+    "investigate": 4,
+    "verify": 3,
+    "extract": 2,
+    "synthesize": 1,
+    "compose": 1,
+    "analyze": 1,
+    "critique": 1
+  },
+  "move_diversity": 0.54,
+  "tool_calls": 130,
+  "tool_distribution": {
+    "read": 106,
+    "find": 13,
+    "ls": 10,
+    "grep": 1
+  },
+  "records_to_pinned_tier": 13,
+  "abstentions": 0
+}
