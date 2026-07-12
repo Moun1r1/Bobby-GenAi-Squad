@@ -1,12 +1,22 @@
-# Bobby GenAi Squad
+# Bobby — Self-Organizing Generative Agent Squad
 
-**Self-organizing generative agents that read any knowledge sector end to end without context blowup, transfer what
-they learn across domains, and prove their gains.** Persistent-self agents coordinate on a recursive shared board,
-verify by outcome (not by prose), and hold state across a long horizon in a pinned tier compaction never touches.
+Most "agentic AI" systems still require heavy human scripting: predefined roles, prompt chains, fixed workflows, and rigid orchestrators.  
 
-They read whole codebases and papers section-by-section — self-paced — while the prompt stays flat, then carry the
-knowledge between agents and across fields (physics ↔ economics, neuroscience ↔ AI, …). No orchestrator, no assigned
-roles — a self-organizing swarm, a recursive shared board, and a verify gate, self-scaled to the task.
+**Bobby is different.**
+
+We give agents only three things:
+- A **persistent Self** (identity + long-term memory)
+- A high-level **Goal**
+- Access to tools and the ability to observe outcomes
+
+From there, **everything else emerges**: team structure, division of labor, recursion depth, strategy adaptation, and even new sub-goals. Agents clone, mutate goals, run parallel experiments (generative + static variants), evaluate results, and consolidate winning intelligence into a reusable gallery.
+
+### What this enables
+- True self-organization and long-horizon autonomy
+- Emergent multi-agent collaboration without predefined roles or graphs
+- A growing, self-improving library of specialized agents
+- Continuous optimization of complex systems (Obsidian vaults, knowledge bases, conflict resolution simulations, software processes, and more)
+- Hybrid power: the creativity of generative agents + the reliability of optimized static agents
 
 Pure Python standard library. It talks to any OpenAI-compatible `/v1/chat/completions` endpoint (local or hosted).
 
