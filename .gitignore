@@ -13,3 +13,9 @@ out/
 *.log
 *.vectors.json
 pdfcache/
+
+# frontend + build cache (never source)
+node_modules/
+.next/
+*.tsbuildinfo
+.pytest_cache/

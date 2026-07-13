@@ -207,13 +207,6 @@ flowchart LR
 5. **Guard-first** — guardable mistakes (identity dedup, recall floor) live in deterministic code; only un-guardable
    generative choices are left to the model.
 
-## Honest caveats
-
-- Outputs are written by whatever model you point it at — a rich, navigable result, not a signed audit. The
-  token/coverage numbers are mechanical; spot-check load-bearing claims.
-- **Autonomous proving is a capability floor:** small local models generate broad but don't reliably write a fair
-  gain-A/B. The pattern that works is a *teaching flywheel* — the local swarm generates, a stronger model proves.
-
 ## License
 
 MIT — see [LICENSE](LICENSE).

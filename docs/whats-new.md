@@ -82,8 +82,6 @@ matters:* MoE is where open foundation models are going, and the router is exact
 ## Honest limits
 
 - Outputs are still written by whatever model you point it at — a rich navigable result, not a signed audit.
-- **Autonomous proving is a capability floor:** small local models generate broad but don't reliably write a fair
-  gain-A/B — the pattern that works is a *teaching flywheel* (local swarm generates, a stronger model proves).
 - **Training is gated, not guaranteed:** the encoders and the flywheel are proven per-run against a held-out
   challenge; a run that doesn't beat its baseline is kept *out*, not wired.
 - Large MoE training is memory-bound: it needs a fitting GPU (or a mature MoE-LoRA backend) — the platform gates and
