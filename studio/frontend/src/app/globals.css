@@ -1,0 +1,31 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* ===== Chat-inbox design system (Chatwoot/Intercom-style) — light, clean, professional ===== */
+@theme {
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-brand: #2563eb;      /* blue-600 */
+  --color-brand-deep: #1e3a8a; /* navy — operator bubbles */
+}
+
+html, body { background: #f1f5f9; color: #1e293b; }         /* slate-100 / slate-800 */
+* { -webkit-font-smoothing: antialiased; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+.inp { width: 100%; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 9px 12px; color: #1e293b; font: inherit; }
+.inp:focus { outline: none; border-color: var(--color-brand); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+.inp::placeholder { color: #94a3b8; }
+.btn { border-radius: 9px; padding: 8px 14px; font-size: 13px; cursor: pointer; border: 1px solid #e2e8f0; background: #fff; color: #334155; transition: all .12s; font-weight: 500; }
+.btn:hover { background: #f8fafc; border-color: #cbd5e1; }
+.btn-primary { background: var(--color-brand); color: #fff; border: none; }
+.btn-primary:hover { background: #1d4ed8; }
+.btn-primary:disabled { opacity: .5; cursor: default; }
+.btn-ghost { background: transparent; border-color: transparent; }
+.btn-ghost:hover { background: #f1f5f9; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.rise { animation: rise .22s ease-out both; }
+@keyframes livedot { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+.livedot { animation: livedot 1.4s ease-in-out infinite; }

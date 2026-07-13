@@ -4,16 +4,20 @@ title: Bobby GenAi Squad
 
 # Bobby GenAi Squad
 
-**Self-organizing generative agents that read any knowledge sector end to end without context blowup, transfer what
-they learn across domains, and prove their gains.** Persistent-self agents coordinate on a recursive shared board,
-verify by outcome (not by prose), and hold state across a long horizon in a pinned tier compaction never touches.
+**A framework for teams of AI agents that organize themselves.** Give a squad a goal and a model; they split the
+work, read and research on their own, keep the goal and everything they've learned intact over very long tasks, prove
+what actually helped, and can even train a model on what they learned — and **you don't script the roles, the prompts,
+or the steps.**
 
-They read whole codebases and papers section-by-section — self-paced — while the prompt stays flat, then carry the
-knowledge between agents and across fields (physics ↔ economics, neuroscience ↔ AI, …).
+What that means in practice: it reads a whole codebase or a stack of papers end to end *without the AI forgetting the
+earlier parts*; the agents run as a self-organizing team draining a shared to-do board (no manager, no fixed roles);
+they write what they learn into a linked knowledge base they reuse next time; they **A/B-test their own improvements
+and drop what doesn't help**; and they can turn what they proved into fine-tuning data to train a model. Unlike most
+agent frameworks, you wire nothing — the team figures out the roles and the workflow.
 
-Pure Python stdlib. Talks to any OpenAI-compatible `/v1/chat/completions` endpoint (local or hosted).
+Pure Python stdlib. Talks to any OpenAI-compatible model endpoint (local — vLLM, sglang, Ollama — or hosted).
 
-**[Code on GitHub »](https://github.com/Moun1r1/Bobby-GenAi-Squad)** · **[The generative engine, layer by layer »](engine)**
+**[Code on GitHub »](https://github.com/Moun1r1/Bobby-GenAi-Squad)** · **[What's new »](whats-new)** · **[Architecture »](architecture)** · **[Interface »](interface)** · **[The engine, layer by layer »](engine)**
 
 ```bash
 pip install -e .
@@ -21,6 +25,36 @@ export BOBBY_LLM_URL="http://localhost:8000/v1/chat/completions"
 export BOBBY_LLM_MODEL="your-served-model-id"
 export BOBBY_EMBED_URL="http://localhost:11434/api/embed"   # optional
 ```
+
+---
+
+## The platform — engine · Studio · GPU worker
+
+Three layers, used together or à la carte: **the engine** (`bobby_squad`, pure-Python primitives); **Studio** — a
+FastAPI backend that wraps the engine as pipelines + a Next.js frontend to *watch the generative loop live* (board
+draining, each agent's target → plan → move → tool, the knowledge-vault graph, the proof bench, realtime GPU/CPU
+monitor); and an isolated, memory-capped **Docker GPU worker** the swarm pushes code to and **trains on** (pre-train
+safety gate, background runs). All dockerized for local deployment.
+
+<pre class="mermaid">
+flowchart LR
+  FE["Next.js Studio<br/>(watch live)"] <--> BE["FastAPI backend<br/>(pipelines)"]
+  BE <--> ENG["bobby_squad engine"]
+  ENG <--> VAULT[("knowledge vault<br/>[[linked notes]]")]
+  BE -. push + train .-> GPU["GPU worker<br/>(Docker · gated)"]
+</pre>
+
+## Knowledge vault + training flywheel — generative → static prompt → auto-finetune
+
+The swarm reads and enriches an **Obsidian-style knowledge vault** (markdown notes + `[[wikilinks]]`, git-versioned,
+hot-reloading; navigate the local subgraph, write new notes back with provenance) — so each run starts wiser than the
+last. That knowledge feeds a flywheel from *generation* to *weights*: **generative** (proven behavior) →
+**static prompt / skill** (distill, cheapest) → **auto-finetune** (a meta-cognition module manufactures preference
+pairs — pattern · critique · alternative · chosen ≻ rejected — with no hand labels; plus vault good/bad and
+trajectory-scored pairs → **self-DPO** on the GPU worker). Trainable **encoders** (a *world layer* that feeds state as
+embeddings not chat, a learned value head / retriever / trajectory monitor / perception, and a coupled *self-model*)
+extend it; every training run — dense LMs up to **MoE** foundations (LoRA on attention + router) — is gated by a real
+**held-out challenge**.
 
 ---
 
@@ -190,7 +224,7 @@ optimization  →  signal-proc: apply Lagrangian dual "Performance Estimation" c
 
 ## Virtual worlds — a customer-service training ground
 
-Same AgentSociety engine, a different world. One **persistent-self support agent** — grounded in a de-escalation
+Same engine, a different world. One **persistent-self support agent** — grounded in a de-escalation
 **knowledge base** and coached each turn by a **supervisor agent** (the metacognition idea: review behavior, then
 mitigate) — faces a queue of angry customers. Each customer is a **real persona** from the persona set, overlaid
 with an angry state and a concrete issue, reacting in character.

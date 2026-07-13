@@ -1,7 +1,7 @@
 """worldsense — let a generative agent CHECK many worlds/contexts (signals) and pull the salient ones into its own
 reasoning, instead of being confined to one fixed subject.
 
-The AgentSociety WorldStream is the BASELINE world (already built). This is the SENSING layer on top of it:
+The baseline WorldStream is the BASELINE world (already built). This is the SENSING layer on top of it:
 
   • a pluggable registry of signal SOURCES — each is a 'world' the agent can check (the society stream is just one:
     files changing, the idea frontier, what peers are doing, time passing, its own EMOTION, its own SELF-MODEL).
@@ -29,7 +29,7 @@ def signal(source, text, kind="event", t=None, salience=1.0, meta=None):
 
 # ── SOURCES — each a 'world'; anything with `.name` and `.poll() -> list[signal]` works ───────────────────────────
 class WorldStreamSource:
-    """The AgentSociety event stream (baseline world): what OTHER agents just said/did, emotion and all."""
+    """The peer event stream (baseline world): what OTHER agents just said/did, emotion and all."""
     name = "society"
 
     def __init__(self, world, exclude=None):

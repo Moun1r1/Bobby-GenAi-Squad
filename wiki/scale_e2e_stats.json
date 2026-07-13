@@ -1,0 +1,433 @@
+{
+  "run": "scale_e2e",
+  "model": "claude-opus-4-8",
+  "agents": 50,
+  "wall_seconds": 723.2,
+  "llm": {
+    "calls": 369,
+    "ok": 369,
+    "errors": 0,
+    "error_rate": 0.0,
+    "tokens_prompt": 736271,
+    "tokens_completion": 21495,
+    "tokens_total": 757766,
+    "latency_s": {
+      "mean": 1.957,
+      "p50": 1.609,
+      "p90": 2.689,
+      "p95": 3.462,
+      "max": 39.184
+    },
+    "throughput_calls_per_min": 30.6
+  },
+  "per_agent": {
+    "carto-0": {
+      "moves": 3,
+      "tools": 5,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-1": {
+      "moves": 3,
+      "tools": 6,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-10": {
+      "moves": 3,
+      "tools": 5,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-11": {
+      "moves": 3,
+      "tools": 4,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-12": {
+      "moves": 3,
+      "tools": 6,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-13": {
+      "moves": 3,
+      "tools": 5,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-14": {
+      "moves": 3,
+      "tools": 4,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-15": {
+      "moves": 3,
+      "tools": 4,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-16": {
+      "moves": 3,
+      "tools": 5,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-17": {
+      "moves": 3,
+      "tools": 4,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-18": {
+      "moves": 3,
+      "tools": 5,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-19": {
+      "moves": 3,
+      "tools": 6,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-2": {
+      "moves": 3,
+      "tools": 4,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-20": {
+      "moves": 3,
+      "tools": 4,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-21": {
+      "moves": 3,
+      "tools": 4,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-22": {
+      "moves": 3,
+      "tools": 3,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-23": {
+      "moves": 3,
+      "tools": 6,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-24": {
+      "moves": 3,
+      "tools": 6,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-25": {
+      "moves": 3,
+      "tools": 5,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-26": {
+      "moves": 3,
+      "tools": 3,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-27": {
+      "moves": 3,
+      "tools": 3,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-28": {
+      "moves": 3,
+      "tools": 5,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-29": {
+      "moves": 3,
+      "tools": 5,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-3": {
+      "moves": 3,
+      "tools": 5,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-30": {
+      "moves": 3,
+      "tools": 4,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-31": {
+      "moves": 3,
+      "tools": 4,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-32": {
+      "moves": 3,
+      "tools": 5,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-33": {
+      "moves": 3,
+      "tools": 5,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-34": {
+      "moves": 3,
+      "tools": 4,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-35": {
+      "moves": 3,
+      "tools": 5,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-36": {
+      "moves": 3,
+      "tools": 3,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-37": {
+      "moves": 3,
+      "tools": 4,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-38": {
+      "moves": 3,
+      "tools": 3,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-39": {
+      "moves": 3,
+      "tools": 5,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-4": {
+      "moves": 3,
+      "tools": 5,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-40": {
+      "moves": 3,
+      "tools": 4,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-41": {
+      "moves": 3,
+      "tools": 4,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-42": {
+      "moves": 3,
+      "tools": 5,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-43": {
+      "moves": 3,
+      "tools": 4,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-44": {
+      "moves": 3,
+      "tools": 5,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-45": {
+      "moves": 3,
+      "tools": 3,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-46": {
+      "moves": 3,
+      "tools": 5,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-47": {
+      "moves": 3,
+      "tools": 5,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-48": {
+      "moves": 2,
+      "tools": 3,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-49": {
+      "moves": 2,
+      "tools": 2,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-5": {
+      "moves": 3,
+      "tools": 5,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-6": {
+      "moves": 3,
+      "tools": 2,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-7": {
+      "moves": 3,
+      "tools": 5,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-8": {
+      "moves": 3,
+      "tools": 5,
+      "cycles": 0,
+      "results": 0
+    },
+    "carto-9": {
+      "moves": 3,
+      "tools": 5,
+      "cycles": 0,
+      "results": 0
+    }
+  },
+  "rounds": [
+    {
+      "round": 25,
+      "board": 71,
+      "new": 129,
+      "rejected": 0,
+      "elapsed_s": 132.2,
+      "calls": 62,
+      "tokens": 128189,
+      "coverage": 0.351,
+      "depth_max": 1,
+      "pass": 25,
+      "store_tokens_est": 0,
+      "prompt_tokens_est_max_agent": 0
+    },
+    {
+      "round": 50,
+      "board": 50,
+      "new": 171,
+      "rejected": 0,
+      "elapsed_s": 222.8,
+      "calls": 124,
+      "tokens": 253707,
+      "coverage": 0.465,
+      "depth_max": 1,
+      "pass": 50,
+      "store_tokens_est": 0,
+      "prompt_tokens_est_max_agent": 0
+    },
+    {
+      "round": 75,
+      "board": 41,
+      "new": 267,
+      "rejected": 0,
+      "elapsed_s": 348.7,
+      "calls": 190,
+      "tokens": 398583,
+      "coverage": 0.726,
+      "depth_max": 1,
+      "pass": 75,
+      "store_tokens_est": 0,
+      "prompt_tokens_est_max_agent": 0
+    },
+    {
+      "round": 100,
+      "board": 36,
+      "new": 317,
+      "rejected": 0,
+      "elapsed_s": 469.6,
+      "calls": 252,
+      "tokens": 532694,
+      "coverage": 0.861,
+      "depth_max": 2,
+      "pass": 100,
+      "store_tokens_est": 0,
+      "prompt_tokens_est_max_agent": 0
+    },
+    {
+      "round": 125,
+      "board": 15,
+      "new": 354,
+      "rejected": 0,
+      "elapsed_s": 610.2,
+      "calls": 317,
+      "tokens": 673966,
+      "coverage": 0.962,
+      "depth_max": 2,
+      "pass": 125,
+      "store_tokens_est": 0,
+      "prompt_tokens_est_max_agent": 0
+    },
+    {
+      "round": 148,
+      "board": 0,
+      "new": 368,
+      "rejected": 0,
+      "elapsed_s": 723.2,
+      "calls": 369,
+      "tokens": 757766,
+      "coverage": 1.0,
+      "depth_max": 4,
+      "pass": 148,
+      "store_tokens_est": 0,
+      "prompt_tokens_est_max_agent": 0
+    }
+  ],
+  "stability": {
+    "peak_board": 71,
+    "dedup_reject_rate": 0.0,
+    "plateau_round": null,
+    "call_error_rate": 0.0,
+    "agents_active": 50,
+    "agents_configured": 50,
+    "exceptions": 0
+  },
+  "ideas": {
+    "coverage": 1.0,
+    "defs_covered": 368,
+    "defs_total": 368,
+    "passes": 148,
+    "units_left": 0,
+    "board_drained": true,
+    "recursion_depth_max": 4,
+    "files": 84,
+    "agents_cap": 50,
+    "agents_self_scaled_to": 50,
+    "agents_active": 50
+  }
+}

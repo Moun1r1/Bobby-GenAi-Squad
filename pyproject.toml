@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "bobby-genai-squad"
 version = "0.1.0"
-description = "A self-organizing generative-agent squad: persistent-self agents that coordinate on a recursive shared board, verify by outcome, and prove their gains — organization beats raw intelligence."
+description = "Teams of AI agents that organize themselves: split the work, read huge tasks end-to-end without forgetting, prove what actually works (and drop what doesn't), and learn/train from it — no orchestrator, no scripted roles."
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
@@ -22,6 +22,10 @@ dependencies = []   # pure stdlib. An OpenAI-compatible /v1/chat/completions end
 [project.optional-dependencies]
 embeddings = []     # any OpenAI-/Ollama-compatible embedding endpoint (set BOBBY_EMBED_URL); no python deps required.
 papers = ["pypdf"]  # only the arXiv-reading proof (wiki/proofs/squad_reads_pdfs.py) needs a PDF text extractor.
+training = ["torch", "numpy"]   # the encoder bank + world-transformer layer (GPU training on the worker); the learned
+                                # retriever (LearnedRetriever) needs numpy. The core engine + vault work without either.
+# The Studio control room (studio/) is a separate app — its deps live in studio/backend/requirements.txt and
+# studio/frontend/package.json, deployed via studio/docker-compose.yml.
 
 [project.urls]
 Homepage = "https://github.com/Moun1r1/Bobby-GenAi-Squad"
