@@ -30,10 +30,10 @@ Every move and every tool call was the agent's **own** choice — no step was sc
 The agent chooses its **own** target and its **own** move each step. `GUIDANCE_WF` injects only identity + goal +
 progress and asks the model to *choose* — a frame, never a script.
 
-<pre class="mermaid">
+```mermaid
 flowchart LR
   G["select_target<br/><i>what to work on</i>"] --> P["make_plan<br/><i>steps, each names its move</i>"] --> C["carry_out<br/><i>tool-grounded</i>"] --> R["record<br/><i>→ pinned tier</i>"] --> G
-</pre>
+```
 
 > **The one test for every layer:** does it *prescribe behavior* (banned) or *frame the model to self-direct*
 > (allowed)? Adding a move the agent can select is fine; adding a prompt that makes it comply is not.
@@ -45,12 +45,12 @@ flowchart LR
 Identity, goal, and accumulated knowledge live in a **pinned tier** compaction never touches; the working window is
 a tiny scroll that's wiped between items. The prompt stays flat no matter how long the horizon.
 
-<pre class="mermaid">
+```mermaid
 flowchart TB
   ITEM["next unit"] --> CUR["WORKING window<br/>(current item only, wiped)"]
   CUR --> IDX["PINNED tier<br/>(identity + accumulated knowledge — survives)"]
   CUR -. compact .-> X["(wiped)"]
-</pre>
+```
 
 **Proven:** streaming 25 large codebases, pinned prompt stayed **≤ 4,689 tokens** while a keep-everything agent
 would reach **~40,075** — **8.5×** less, nothing lost. → [long-horizon proof](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/squad_reads_code.py)
@@ -62,12 +62,12 @@ would reach **~40,075** — **8.5×** less, nothing lost. → [long-horizon proo
 The agent **names its own move** per step — not a fixed enum. Across real runs the swarm self-selected a dozen
 distinct moves with no move hardcoded:
 
-<pre class="mermaid">
+```mermaid
 flowchart LR
   T["self-selected target"] --> M{"which move?"}
   M --> a[investigate] & b[invent] & c[compose] & d[synthesize]
   M --> e[critique] & f[experiment] & g[reason] & h[organize]
-</pre>
+```
 
 **Observed** (emergent, unprompted): `investigate · invent · compose · synthesize · critique · experiment · reason ·
 wire · select · verify · index · map`. A "critic" is a *move any agent takes*, not a persona anyone assigned.
@@ -79,13 +79,13 @@ wire · select · verify · index · map`. A "critic" is a *move any agent takes
 Capability comes from what the agent can *do*, not what it's told to say: read-only investigation (grep / read / ls
 / find) and a sandbox (write / edit / run / test). Verdicts come from **execution**, not a rubric.
 
-<pre class="mermaid">
+```mermaid
 flowchart LR
   A["agent move"] --> RO["read-only: grep · read · ls · find"]
   A --> SB["sandbox: write · edit · run · test"]
   RO --> V["grounded claim (cited)"]
   SB --> V2["verdict from a real run"]
-</pre>
+```
 
 This killed the biggest failure mode — "X is missing/broken" claims from a partial view. Given full code, the same
 squad produced **zero** "it's missing" confabulation and found real bugs.
@@ -97,13 +97,13 @@ squad produced **zero** "it's missing" confabulation and found real bugs.
 No role chart. General agents share one board and each self-selects the move the work needs (the Sequential
 protocol). Coverage recurses into what's under-done; plateau = the board drains.
 
-<pre class="mermaid">
+```mermaid
 flowchart LR
   B[(shared board)] --> A1[agent] & A2[agent] & A3[agent]
   A1 & A2 & A3 --> B
   B --> V{"verify"} -->|under-covered| SP["split → recurse"] --> B
   V -->|covered| DONE["plateau"]
-</pre>
+```
 
 **Proven:** recursive coordination lifts function-coverage far above a solo pass on the same model.
 → [squad_solve](https://github.com/Moun1r1/Bobby-GenAi-Squad/blob/main/wiki/proofs/organization_recursive.py)
@@ -139,11 +139,11 @@ An agent reviews a peer's **real behavioral trace** and detects its bias (move/a
 frontier (where novelty collapses) — grounded in deterministic signals, not vibes. A self-model loop a single
 one-pass call can't run on itself.
 
-<pre class="mermaid">
+```mermaid
 flowchart LR
   P["peer's behavior trace"] --> S["deterministic signals<br/>move-entropy · area-conc · repetition · novelty curve"]
   S --> R["reviewer names bias + frontier<br/>(cites the numbers)"]
-</pre>
+```
 
 ---
 
@@ -162,14 +162,14 @@ replication (seeds + CI). Most proposals **fail** a fair A/B — that's the poin
 The top layer: an agent **becomes the data it reads** — its persona crystallizes into a specialist grounded in the
 material — and that knowledge is stored, recalled by *other* agents, and carried **across domains**.
 
-<pre class="mermaid">
+```mermaid
 flowchart LR
   A["blank agent"] -->|reads| D[("real papers / code")]
   D ==>|persona crystallizes| E["specialist"]
   D -->|concepts| S[["shared store"]]
   S --> B["another agent recalls it"]
   S --> X["bridge to a distant field"]
-</pre>
+```
 
 **Proven:** an agent that read only a *logic* paper correctly explained a *physics* paper it never read (grounded);
 the squad read **12 sectors** and bridged e.g. **neuroscience → economics**, **complex-systems → AI**.
@@ -181,5 +181,13 @@ the squad read **12 sectors** and bridged e.g. **neuroscience → economics**, *
 
 <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  // GitHub renders ```mermaid natively; on the Jekyll Pages site the same fence
+  // becomes <pre><code class="language-mermaid"> — convert those so mermaid picks them up.
+  document.querySelectorAll('pre > code.language-mermaid').forEach((code) => {
+    const el = document.createElement('pre');
+    el.className = 'mermaid';
+    el.textContent = code.textContent;
+    code.parentElement.replaceWith(el);
+  });
   mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
 </script>
