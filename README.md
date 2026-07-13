@@ -1,4 +1,4 @@
-# Bobby GenAi Squad
+# Bobby — Self-Organizing Generative Agent Squad
 
 **A framework for teams of AI agents that organize themselves.** You give a squad of agents a goal and a model; they
 split the work, read and research on their own, keep the goal and everything they've learned intact over very long
