@@ -8,6 +8,10 @@ roles, the prompts, or the steps.** The team figures that out.
 Pure Python standard library. It talks to any OpenAI-compatible model endpoint — local (vLLM, sglang, Ollama,
 llama.cpp) or a hosted API.
 
+![Bobby Studio — watching a live run: agents miner0/miner1 take invent/experiment/critique moves on a shared idea board (3 ideas · 9 repelled), with the wave/plateau counter and a box to steer the squad mid-run](docs/screenshots/run-conversations.png)
+
+<sub>The optional **Studio** web UI shows the swarm's generative loop live — [all screens »](docs/interface.md).</sub>
+
 ## What it actually does
 
 Point it at a big job and a model, and:
@@ -86,13 +90,13 @@ Bobby is three layers, used together or à la carte:
 
 Everything is dockerized for local deployment.
 
-<pre class="mermaid">
+```mermaid
 flowchart LR
   FE["Next.js Studio<br/>(watch live)"] <--> BE["FastAPI backend<br/>(engine as pipelines)"]
   BE <--> ENG["bobby_squad engine<br/>(persistent-self swarm)"]
   ENG <--> VAULT[("knowledge vault<br/>[[linked notes]]")]
   BE -. push code + train .-> GPU["isolated GPU worker<br/>(Docker · gated · background)"]
-</pre>
+```
 
 ---
 
@@ -184,7 +188,7 @@ self-generating label and a held-out challenge:
   on world state**. One `assess()` answers, per step, *{world, am-I-looping, how-good}* — metacognition with no
   hand-written prompts, and the source of the auto-harvested preference pairs above.
 
-<pre class="mermaid">
+```mermaid
 flowchart LR
   GEN["generative swarm<br/>(proven behavior)"] --> PROMPT["static prompt / skill<br/>(distill · cheapest)"]
   GEN --> META["meta-cognition<br/>pattern · critique · alternative"]
@@ -193,7 +197,7 @@ flowchart LR
   META --> PAIRS["preference pairs<br/>(chosen ≻ rejected)"]
   PAIRS --> DPO["self-DPO on GPU worker<br/>(LoRA · held-out gate)"]
   DPO -->|improved model| GEN
-</pre>
+```
 
 ---
 

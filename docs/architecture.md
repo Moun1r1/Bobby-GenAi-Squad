@@ -9,7 +9,7 @@ vault** (a note graph on disk), **Studio** (a FastAPI backend + Next.js frontend
 (Docker), and a **training layer** (encoders + a self-DPO flywheel). You can use the engine alone, or run the whole
 platform.
 
-<pre class="mermaid">
+```mermaid
 flowchart TB
   subgraph studio["Studio (control room)"]
     FE["Next.js + tRPC frontend<br/>watch the loop live"]
@@ -22,7 +22,7 @@ flowchart TB
   BE -. push code + train .-> GPU["GPU worker (Docker)<br/>isolated · memory-capped · gated"]
   GPU -. trained adapters .-> BE
   ENG -. any OpenAI endpoint .-> LLM["served model<br/>(vLLM / sglang / Ollama / hosted)"]
-</pre>
+```
 
 ---
 
@@ -107,7 +107,7 @@ a `dgx` prefix from where this was first developed — it's a naming artifact, n
 - **`_dgx_train` (`runner.py`)** — launches a training script as a **background job** and polls its log for the
   challenge marker, so a big-model load + train is never cut off by an exec timeout.
 
-<pre class="mermaid">
+```mermaid
 flowchart LR
   BE["backend pipeline"] -->|is_safe gate| MON["GPU monitor"]
   BE -->|push code+data| W["worker container<br/>(--memory cap · any CUDA GPU)"]
@@ -116,7 +116,7 @@ flowchart LR
   W -->|pull adapter| BE
   MODELS[("/models (ro)")] --- W
   WS[("/workspace (rw)")] --- W
-</pre>
+```
 
 ---
 
@@ -146,7 +146,7 @@ components:
 | `self_dpo` | LoRA on a foundation model | meta-cognition preference pairs | DPO loss drops, margin ↑ |
 | `qwen_moe_lora` | MoE LoRA (attn + router) | vault targets, aux-loss on | held-out adapter < base AND router adapted |
 
-<pre class="mermaid">
+```mermaid
 flowchart LR
   GEN["generative swarm"] --> META["meta-cognition<br/>pattern·critique·alternative"]
   VAULT[("vault good/bad")] --> META
@@ -156,7 +156,7 @@ flowchart LR
   DPO -->|held-out gate| CH{"proven?"}
   CH -->|yes| MODEL["improved model"] --> GEN
   CH -->|no| DROP["kept out (not wired)"]
-</pre>
+```
 
 ---
 
@@ -164,5 +164,13 @@ See also: **[What's new »](whats-new)** · **[Interface »](interface)** · **[
 
 <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  // GitHub renders ```mermaid natively; on the Jekyll Pages site the same fence
+  // becomes <pre><code class="language-mermaid"> — convert those so mermaid picks them up.
+  document.querySelectorAll('pre > code.language-mermaid').forEach((code) => {
+    const el = document.createElement('pre');
+    el.className = 'mermaid';
+    el.textContent = code.textContent;
+    code.parentElement.replaceWith(el);
+  });
   mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
 </script>

@@ -36,13 +36,13 @@ draining, each agent's target → plan → move → tool, the knowledge-vault gr
 monitor); and an isolated, memory-capped **Docker GPU worker** the swarm pushes code to and **trains on** (pre-train
 safety gate, background runs). All dockerized for local deployment.
 
-<pre class="mermaid">
+```mermaid
 flowchart LR
   FE["Next.js Studio<br/>(watch live)"] <--> BE["FastAPI backend<br/>(pipelines)"]
   BE <--> ENG["bobby_squad engine"]
   ENG <--> VAULT[("knowledge vault<br/>[[linked notes]]")]
   BE -. push + train .-> GPU["GPU worker<br/>(Docker · gated)"]
-</pre>
+```
 
 ## Knowledge vault + training flywheel — generative → static prompt → auto-finetune
 
@@ -63,25 +63,25 @@ extend it; every training run — dense LMs up to **MoE** foundations (LoRA on a
 No static prompts, no scripted pipeline. Each agent runs a self-directed loop and **chooses its own move** — the
 behavior comes from its *self* + its *tools* + what it has read, never from a template.
 
-<pre class="mermaid">
+```mermaid
 flowchart LR
   G["select_target"] --> P["make_plan"] --> C["carry_out<br/>with tools"] --> R["record →<br/>pinned tier"] --> G
   C -. self-selected move .-> M(["investigate · invent · compose · critique · organize"])
-</pre>
+```
 
 ## The agent *becomes* the data — a persona from what it reads
 
 The core generative idea: an agent starts **blank** and **crystallizes into a specialist grounded in the data it
 reads**. Its identity is a live compression of the material — which it then carries to other agents and other fields.
 
-<pre class="mermaid">
+```mermaid
 flowchart LR
   A["blank agent<br/><i>indexer, no specialty</i>"] -->|reads section by section| D[("real data<br/>papers · code")]
   D -->|extract concepts| S[["shared semantic store"]]
   D ==>|persona crystallizes| E["specialist agent<br/><b>Flask architecture expert</b>"]
   E -->|carries knowledge| T["transfer across agents & domains"]
   S --> T
-</pre>
+```
 
 Real, from live runs — the persona cites the source's internals because it *is* a compression of the source:
 
@@ -96,7 +96,7 @@ Real, from live runs — the persona cites the source's internals because it *is
 One persistent-self agent streams a huge corpus through a **tiny working window** while the accumulated knowledge
 lives in a **pinned tier** compaction never touches — the prompt stays flat no matter how long the horizon.
 
-<pre class="mermaid">
+```mermaid
 flowchart TB
   ITEM["next unit"] --> CUR
   subgraph work["WORKING window — wiped each item (bounded)"]
@@ -107,7 +107,7 @@ flowchart TB
   end
   CUR --> IDX
   CUR -. compact .-> X["(wiped)"]
-</pre>
+```
 
 <svg viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;background:#fff;border:1px solid #e5e5e5;border-radius:8px">
   <text x="55" y="22" font-size="13" fill="#24292f" font-weight="bold">Prompt tokens across 25 streamed codebases</text>
@@ -229,14 +229,14 @@ Same engine, a different world. One **persistent-self support agent** — ground
 mitigate) — faces a queue of angry customers. Each customer is a **real persona** from the persona set, overlaid
 with an angry state and a concrete issue, reacting in character.
 
-<pre class="mermaid">
+```mermaid
 flowchart LR
   P["persona set<br/>(real personalities)"] -->|+ anger + issue| CUST["angry customer"]
   KB[["de-escalation<br/>knowledge base"]] --> SUP["support agent<br/>(persistent-self)"]
   CUST <-->|conversation| SUP
   SUP --> SV["supervisor<br/>reviews + coaches"]
   SV -.coaching.-> SUP
-</pre>
+```
 
 **Result (deterministic: customer self-rated mood + policy adherence):**
 
@@ -303,5 +303,13 @@ _MIT licensed._
 
 <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  // GitHub renders ```mermaid natively; on the Jekyll Pages site the same fence
+  // becomes <pre><code class="language-mermaid"> — convert those so mermaid picks them up.
+  document.querySelectorAll('pre > code.language-mermaid').forEach((code) => {
+    const el = document.createElement('pre');
+    el.className = 'mermaid';
+    el.textContent = code.textContent;
+    code.parentElement.replaceWith(el);
+  });
   mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
 </script>

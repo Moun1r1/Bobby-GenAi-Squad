@@ -32,6 +32,8 @@ fair test — which is the point.
 frontend lets you *watch the run happen* — the board draining, each agent's move/tool stream, the vault graph, the
 proof bench, and a realtime GPU monitor — organized by engine layer. See [Interface](../docs/interface.md).
 
+![Studio ▸ Squad — assemble a self-organizing squad and browse the "Specialist library · 17" of real crystallized specialists the swarm has become](../docs/screenshots/squad-board.png)
+
 **GPU worker + training.** An isolated, memory-capped **Docker** container on **any CUDA GPU host** (workstation,
 cloud VM, cluster node — nothing product-specific), with a pre-train safety gate and background runs. On it, the
 platform can **train models, not just call them**:

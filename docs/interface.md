@@ -8,26 +8,16 @@ Studio is a Next.js + tRPC app that talks to the FastAPI backend. It's organized
 a left rail of layers (Run · Compose · Squad · Prove · Compute · Memory · System), each opening its related screens as
 sub-tabs. You *watch the generative loop happen* rather than read logs.
 
-> Screenshots aren't checked into the repo — drop your own under `docs/screenshots/` and reference them here. Each
-> screen below is described from its actual page component.
+![Studio — the Run layer: the engine-layer rail on the left, the live run list, and a real 25-run history](screenshots/overview.png)
 
-```
-┌────┬─────────────────────────────────────────────────────────┐
-│ B  │  layer sub-tabs                                          │
-│ ─  ├─────────────────────────────────────────────────────────┤
-│Run │                                                          │
-│Cmp │     the active screen (live events / graph / bench)      │
-│Sqd │                                                          │
-│Prv │                                                          │
-│Cmp │                                                          │
-│Mem │                                                          │
-│Sys │                                                          │
-└────┴─────────────────────────────────────────────────────────┘
-```
+*The left rail **is** the engine layers (Run · Compose · Squad · Prove · Compute · Memory · System); each opens its
+screens as sub-tabs. The shots below are real captures of the running app against a live backend — no mockups.*
 
 ---
 
 ## Run — the generative loop, live
+
+![Run ▸ Conversations — a live Idea-board run: agents miner0/miner1 taking invent/experiment/critique moves, the board state (3 ideas · 9 repelled), the wave/plateau counter, and a steer box to inject a directive](screenshots/run-conversations.png)
 
 - **Conversations** — the default. Launch/attach a run and watch its event stream turn-by-turn: each agent's
   `target → plan → move → tool → verify`, the pinned-tier memory growing, and the final result. This is the "watch it
@@ -38,11 +28,15 @@ sub-tabs. You *watch the generative loop happen* rather than read logs.
 
 ## Compose — define the SELF
 
+![Compose ▸ Workflows — the Goal-squad "rich pipeline" (Goal → Criteria → Board·squad → Verify → Converge/Escalate) with its parameter form, and the full 24-capability library on the left (research, persona, train, self-dpo, world-layer, qwen-moe-lora, encoders …)](screenshots/compose-workflow.png)
+
 - **Workflows** — create a run from a **SELF** (identity + goal + constraints) — no prompt scripting; the engine
   drives. This is where you point the swarm at a task.
 - **Datasets** — register the material a run reads (text, files, a source path/URL) that becomes the world-context.
 
 ## Squad — coordination
+
+![Squad — assemble a self-organizing squad (max-agents cap that the squad self-scales under), a live-roster picker, and the "Specialist library · 17" of real crystallized specialists the swarm has become, each with its knowledge count](screenshots/squad-board.png)
 
 - **Squad** — the `squad_solve` view: the recursive shared board draining, units splitting and re-queuing, and
   per-agent coverage — the "did we cover it all?" picture.
@@ -50,6 +44,8 @@ sub-tabs. You *watch the generative loop happen* rather than read logs.
   active-repulsion frontier that pushes agents toward gaps.
 
 ## Prove — verify by outcome
+
+![Prove ▸ Proof bench — the gain-proof bench (confirm_gain / prove: verify-by-outcome, negative-control, replication CI) above the live idea-verdict tiles (proven / deleted / contested / kill-ratio)](screenshots/prove-bench.png)
 
 - **Proof bench** — the `prove` results: each mechanism's A/B with its headroom + negative-control + CI guards and its
   verdict (`WIRE / MARGINAL / DELETE / INCONCLUSIVE / INVALID`). Most proposals *fail* a fair test — that's the point.
