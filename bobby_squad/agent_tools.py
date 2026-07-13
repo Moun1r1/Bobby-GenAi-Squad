@@ -360,6 +360,188 @@ class SandboxTools(ReadOnlyTools):
             return f"(sandbox error: {e})"
         return super().run_json(name, args)
 
+DGX_SCHEMAS = SANDBOX_SCHEMAS + [
+    {"type": "function", "function": {"name": "dgx", "description": "Run a shell command on the DGX GPU host over SSH "
+     "— REAL GPU compute (nvidia-smi, docker run --gpus all …, docker exec <container> python train.py, etc.). Returns "
+     "stdout/stderr + exit. For a LONG or CONTINUOUS job set background=true: it launches DETACHED and returns a job "
+     "id you poll with dgx_logs — so training runs while you keep working.", "parameters": {"type": "object",
+     "properties": {"cmd": {"type": "string"}, "background": {"type": "boolean", "description": "launch detached for a "
+     "long/continuous job"}}, "required": ["cmd"]}}},
+    {"type": "function", "function": {"name": "dgx_push", "description": "Copy a file from your sandbox to the DGX "
+     "working dir so you can run it on the GPU.", "parameters": {"type": "object", "properties": {"path": {"type":
+     "string"}}, "required": ["path"]}}},
+    {"type": "function", "function": {"name": "dgx_pull", "description": "Copy a file (result / checkpoint / metrics / "
+     "log) from the DGX working dir back into your sandbox.", "parameters": {"type": "object", "properties": {"path":
+     {"type": "string"}}, "required": ["path"]}}},
+    {"type": "function", "function": {"name": "dgx_logs", "description": "Tail a background DGX job's log (by id) to "
+     "OBSERVE a continuous run's progress.", "parameters": {"type": "object", "properties": {"job": {"type": "string"},
+     "lines": {"type": "integer"}}, "required": ["job"]}}},
+]
+
+
+class DgxTools(SandboxTools):
+    """Generic REMOTE GPU compute on the DGX over SSH — reusable for ANY training/experiment (build a model, train a
+    memory-optimizer, run a continuous pipeline). Extends the sandbox with dgx / dgx_push / dgx_pull / dgx_logs. Every
+    remote action streams a structured `dgx` OBSERVABILITY event through the SAME observer the Agent uses, so remote
+    work is watched live and captured. Host/dir from DGX_HOST / DGX_DIR (default ssh 'spark', ~/ga_dgx). The agent
+    self-selects when to reach for the GPU — nothing scripts it. Not gemma-specific: any compute the SELF calls for."""
+
+    def __init__(self, repo_root: str, sandbox_root: str, host=None, worker=None, image=None, workdir=None,
+                 observer=None, dgx_timeout: int = 240, **kw):
+        super().__init__(repo_root, sandbox_root, **kw)
+        self.host = host or os.environ.get("DGX_HOST", "spark")
+        # ISOLATION: a dedicated GPU-enabled WORKER container — never the host. Reuses an NVIDIA training-stack image so
+        # CUDA/pytorch is already there. Everything runs INSIDE it, so a bad command can't harm the DGX.
+        self.worker = worker or os.environ.get("DGX_WORKER", "ga_worker")
+        self.image = image or os.environ.get("DGX_IMAGE", "")   # "" → auto-detect a LOCAL torch image (never pull)
+        self.workdir = workdir or os.environ.get("DGX_WORKDIR", "/workspace")
+        self.observer = observer
+        self.dgx_timeout = dgx_timeout
+        self._ensured = False
+        self.schemas = DGX_SCHEMAS
+
+    def _emit(self, **d):                                  # observability → the engine's event stream
+        if self.observer:
+            try:
+                self.observer({"kind": "dgx", "host": self.host, "worker": self.worker, **d})
+            except Exception:
+                pass
+
+    def _ssh(self, cmd: str, timeout: int):
+        import subprocess
+        try:
+            p = subprocess.run(["ssh", "-o", "ConnectTimeout=10", "-o", "BatchMode=yes", self.host, cmd],
+                               capture_output=True, text=True, timeout=timeout)
+            return p.returncode, (p.stdout + p.stderr)
+        except subprocess.TimeoutExpired:
+            return 124, "(timed out)"
+
+    def ensure_worker(self) -> str:
+        """Create the dedicated GPU WORKER container if it isn't running (idempotent). Reuses the NVIDIA training-stack
+        image with `--gpus all`; a persistent named volume holds the workdir. All compute runs INSIDE this container, so
+        the DGX host is never touched. First call may PULL the image (slow)."""
+        _rc, out = self._ssh(f"docker ps --format '{{{{.Names}}}}' | grep -qx {self.worker} && echo UP || echo DOWN", 25)
+        if "UP" in out:
+            self._ensured = True
+            return "worker up"
+        # REUSE an NVIDIA training stack ALREADY on the DGX (never pull — that hangs). Detect a LOCAL image that has a
+        # cuda/torch runtime; prefer a known-good one. If none, error clearly rather than pulling 20GB.
+        if not self.image:
+            _rc, imgs = self._ssh("docker images --format '{{.Repository}}:{{.Tag}}'", 25)
+            local = [ln.strip() for ln in imgs.splitlines() if ln.strip() and "<none>" not in ln]
+            kw = ("pytorch", "torch", "cuda", "cu13", "cu12", "cu11", "nvcr", "nemo", "tensorrt", "jax", "vllm", "sglang", "azr")
+            cand = [im for im in local if any(k in im.lower() for k in kw)]
+            # prefer OUR purpose-built image (framework + full DPO/transformer/encoder stack), then known-good bases
+            pref = ([im for im in local if im.startswith("ga_worker:")] or [im for im in cand if "azr:" in im]
+                    or [im for im in cand if "sglang" in im] or cand)
+            if not pref:
+                return ("(no local NVIDIA/torch image found on the DGX to reuse — set DGX_IMAGE to one, or `docker pull` "
+                        "an NVIDIA pytorch image on the DGX first; refusing to auto-pull 20GB)")
+            self.image = pref[0]
+        # RESOURCE MANAGEMENT (the DGX is SHARED — never starve it): cap container RAM/CPUs, and — critically — stop
+        # JAX/torch from grabbing the whole GPU. JAX preallocates ~75% of VRAM by default; on a shared box that OOMs
+        # everything else. These env force lazy, fractional GPU use so a training run can't crash the DGX.
+        mem = os.environ.get("DGX_WORKER_MEM", "48g")
+        cpus = os.environ.get("DGX_WORKER_CPUS", "12")
+        frac = os.environ.get("DGX_GPU_FRACTION", "0.35")
+        # mount foundation-model weights read-only so the worker can TRAIN real models (Gemma/Qwen/…) with no download.
+        models = os.environ.get("DGX_MODELS", "/home/moums/models")
+        mnt = f"-v {models}:/models:ro " if models else ""
+        create = (f"docker rm -f {self.worker} 2>/dev/null; "
+                  f"docker run -d --name {self.worker} --gpus all --restart unless-stopped "
+                  f"--memory={mem} --memory-swap={mem} --cpus={cpus} --shm-size=8g "
+                  f"-e XLA_PYTHON_CLIENT_PREALLOCATE=false -e XLA_PYTHON_CLIENT_MEM_FRACTION={frac} "
+                  f"-e PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True -e CUDA_DEVICE_ORDER=PCI_BUS_ID "
+                  f"{mnt}-v {self.worker}_data:{self.workdir} -w {self.workdir} {self.image} sleep infinity")
+        rc, out = self._ssh(create, 600)                   # may pull the NVIDIA image (large, slow) — one-time
+        self._ensured = rc == 0
+        self._emit(action="worker_create", image=self.image, exit=rc)
+        if rc != 0:
+            return (f"(could not start GPU worker from image {self.image}: {out.strip()[-200:]} — set DGX_IMAGE to an "
+                    "NVIDIA pytorch image available on the DGX, e.g. an arm64 tag)")
+        return f"worker '{self.worker}' up (GPU, image {self.image})"
+
+    def _in_worker(self, cmd: str, timeout: int, detached: bool = False):
+        import shlex
+        inner = f"cd {self.workdir} && {cmd}"
+        flag = "-d" if detached else ""
+        return self._ssh(f"docker exec {flag} {self.worker} bash -lc {shlex.quote(inner)}", timeout)
+
+    def dgx(self, cmd: str, background: bool = False) -> str:
+        import re
+        import shlex
+        if not self._ensured and "up" not in self.ensure_worker():
+            return self.ensure_worker()                    # surface the setup error
+        try:
+            if background:
+                job = (re.sub(r"[^a-z0-9]+", "_", (cmd or "").lower()).strip("_")[:24]) or "job"
+                launch = f"nohup bash -lc {shlex.quote(cmd)} > {job}.log 2>&1 & echo JOB $!"
+                rc, _out = self._in_worker(launch, 40, detached=True)
+                self._emit(action="launch", cmd=(cmd or "")[:200], job=job, exit=rc)
+                return f"[background job '{job}' launched IN worker '{self.worker}' — poll with dgx_logs('{job}')] [exit {rc}]"
+            rc, out = self._in_worker(cmd, self.dgx_timeout)
+            tail = (out.strip().splitlines()[-1][:120] if out.strip() else "")
+            self._emit(action="run", cmd=(cmd or "")[:200], exit=rc, out=tail)
+            return self._cap(out) + f"\n[exit {rc} · in worker {self.worker}]"
+        except Exception as e:
+            return f"(dgx error: {e})"
+
+    def dgx_push(self, path: str) -> str:
+        import subprocess
+        src = self._safe_sandbox(path)
+        if not os.path.exists(src):
+            return f"(not in sandbox: {path} — write it first)"
+        if not self._ensured:
+            self.ensure_worker()
+        try:
+            stage = f"/tmp/{self.worker}_stage"
+            self._ssh(f"mkdir -p {stage}/{os.path.dirname(path)}".rstrip("/"), 20)
+            p = subprocess.run(["scp", "-q", src, f"{self.host}:{stage}/{path}"], capture_output=True, text=True, timeout=180)
+            if p.returncode != 0:
+                return f"(push scp failed: {p.stderr.strip()[:160]})"
+            rc, out = self._ssh(f"docker exec {self.worker} mkdir -p {self.workdir}/{os.path.dirname(path)}; "
+                                f"docker cp {stage}/{path} {self.worker}:{self.workdir}/{path}", 60)
+            self._emit(action="push", path=path, exit=rc)
+            return f"pushed {path} → worker {self.worker}:{self.workdir}/{path}" if rc == 0 else f"(docker cp failed: {out.strip()[:160]})"
+        except Exception as e:
+            return f"(push error: {e})"
+
+    def dgx_pull(self, path: str) -> str:
+        import subprocess
+        dst = self._safe_sandbox(path)
+        os.makedirs(os.path.dirname(dst) or self.sandbox, exist_ok=True)
+        try:
+            stage = f"/tmp/{self.worker}_stage"
+            rc, out = self._ssh(f"mkdir -p {stage}/{os.path.dirname(path)}; "
+                                f"docker cp {self.worker}:{self.workdir}/{path} {stage}/{path}", 60)
+            if rc != 0:
+                return f"(docker cp out failed: {out.strip()[:160]})"
+            p = subprocess.run(["scp", "-q", f"{self.host}:{stage}/{path}", dst], capture_output=True, text=True, timeout=180)
+            self._emit(action="pull", path=path, exit=p.returncode)
+            return f"pulled {path} → sandbox ({os.path.getsize(dst)} bytes)" if p.returncode == 0 else f"(pull scp failed: {p.stderr.strip()[:160]})"
+        except Exception as e:
+            return f"(pull error: {e})"
+
+    def dgx_logs(self, job: str, lines: int = 40) -> str:
+        try:
+            _rc, out = self._in_worker(f"tail -n {int(lines)} {job}.log 2>/dev/null", 30)
+            self._emit(action="logs", job=job)
+            return self._cap(out) or f"(no log yet for job '{job}')"
+        except Exception as e:
+            return f"(logs error: {e})"
+
+    def run_json(self, name: str, args: dict) -> str:
+        if name == "dgx":
+            return self.dgx(args.get("cmd", ""), bool(args.get("background")))
+        if name == "dgx_push":
+            return self.dgx_push(args.get("path", ""))
+        if name == "dgx_pull":
+            return self.dgx_pull(args.get("path", ""))
+        if name == "dgx_logs":
+            return self.dgx_logs(args.get("job", ""), int(args.get("lines", 40) or 40))
+        return super().run_json(name, args)
+
+
 # Behavior-neutral principle, not a script of what to produce (0c): verify/ground before claiming; run when useful.
 _SYSTEM = ("You have tools to investigate real code and, when a claim needs proof, to WRITE and RUN a script in a "
            "sandbox. Ground before you claim: never assert something exists/works/breaks without checking it against "

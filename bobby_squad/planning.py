@@ -1,8 +1,8 @@
-"""bobby_squad.planning — AgentSociety's self-taught Needs→Plan→Cognition loop, made world-free.
+"""bobby_squad.planning — a self-taught Needs→Plan→Cognition loop, made world-free.
 
 The agent generates its OWN behavior: it self-selects a target (Theory-of-Planned-Behaviour guidance
 selection) and then self-generates the steps to reach it (detailed plan). These prompts mirror the structure
-of AgentSociety's `GUIDANCE_SELECTION_PROMPT` and `DETAILED_PLAN_PROMPT`, with the simulation-only fields
+of the `GUIDANCE_SELECTION_PROMPT` and `DETAILED_PLAN_PROMPT`, with the simulation-only fields
 (weather / location / mobility·economy action types) removed and replaced by domain-general step types. We
 provide the MECHANISM; the target, the plan, and the content are entirely the agent's own — no task is handed in.
 """

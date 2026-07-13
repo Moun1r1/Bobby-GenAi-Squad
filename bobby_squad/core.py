@@ -43,12 +43,17 @@ class PersistentContext:
     """
 
     def __init__(self, self_core: SelfCore, window: int = 6, pinned: bool = True,
-                 generic_system: str = "You are a helpful assistant.", progress_cap: int = 60):
+                 generic_system: str = "You are a helpful assistant.", progress_cap: int = 60,
+                 recall: Optional[Callable[[str], str]] = None):
         self.self_core = self_core
         self.window = window
         self.pinned = pinned
         self.generic_system = generic_system
         self.progress_cap = progress_cap
+        # recall(task) -> a pre-formatted, bounded, attributed reference block injected for THIS step. The engine is
+        # knowledge-free: whoever wires it owns the corpus, retrieval, bounding and citation. None → zero change
+        # (the measured persistent-self baseline is preserved). This is the native-prefetch seam.
+        self.recall = recall
         self.working: List[Tuple[str, str]] = []   # [(role, text)] — compactable
         self.progress: List[str] = []              # accumulated results — pinned (if pinned)
 
@@ -87,6 +92,13 @@ class PersistentContext:
 
     def messages(self, task: str) -> List[dict]:
         msgs = [{"role": "system", "content": self.system_prompt()}]
+        if self.recall:                                    # native prefetch: retrieved reference for THIS step, verbatim
+            try:
+                ref = self.recall(task)
+            except Exception:
+                ref = ""
+            if ref:
+                msgs.append({"role": "system", "content": ref})
         for role, text in self.working[-self.window:]:
             msgs.append({"role": role, "content": text})
         msgs.append({"role": "user", "content": task})
@@ -98,8 +110,9 @@ class Agent:
     automatic compaction. `llm` is any callable (messages: list[dict], max_tokens: int) -> str."""
 
     def __init__(self, self_core: SelfCore, llm: Callable, window: int = 6, pinned: bool = True,
-                 compact_every: Optional[int] = None, name: Optional[str] = None, tools=None, observer=None):
-        self.ctx = PersistentContext(self_core, window=window, pinned=pinned)
+                 compact_every: Optional[int] = None, name: Optional[str] = None, tools=None, observer=None,
+                 recall: Optional[Callable[[str], str]] = None):
+        self.ctx = PersistentContext(self_core, window=window, pinned=pinned, recall=recall)
         self.llm = llm
         self.name = name or self_core.identity or "agent"
         self.compact_every = compact_every

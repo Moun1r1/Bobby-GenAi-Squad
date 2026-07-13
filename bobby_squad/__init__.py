@@ -23,17 +23,32 @@ from .retrieval import LexicalRetriever, EmbeddingRetriever, embedding_available
 from .room import KnowledgeRoom
 from .search_agent import HypothesisSearcher
 from .correction_memory import SemanticMemory, CorrectionMemory, FindingsMemory
-from .agent_tools import ReadOnlyTools, SandboxTools, investigate, TOOL_SCHEMAS
+from .agent_tools import ReadOnlyTools, SandboxTools, DgxTools, investigate, TOOL_SCHEMAS
 from .metacognition import BehaviorTrace, MetaTools, area_of
 from .board_tools import BoardTools, BOARD_SCHEMAS
 from .worldsense import (WorldSense, perceive, signal, WorldStreamSource, FileChangeSource, LedgerSource,
                          PeerSource, ClockSource, EmotionState, SelfModelSource)
+from .vault import KnowledgeVault, VaultHub, Note, slug, link_id
+from .learned_retriever import LearnedRetriever, load_retriever
+from .observability import RunStats
+
+# torch is an OPTIONAL dependency — only the encoder bank / world-transformer layer need it (for training the
+# learned heads on a GPU worker). `import bobby_squad` must work without torch installed, so these are guarded.
+try:
+    from .world_layer import WorldEncoder, WorldPrefixLM
+    from .encoders import (ValueHead, RetrievalEncoder, TrajectoryMonitor, SelfMonitor, trajectory_dpo)
+    _TORCH_LAYERS = ["WorldEncoder", "WorldPrefixLM", "ValueHead", "RetrievalEncoder", "TrajectoryMonitor",
+                     "SelfMonitor", "trajectory_dpo"]
+except ImportError:                                        # torch not installed → the training layers are unavailable
+    _TORCH_LAYERS = []
 
 __all__ = ["SelfCore", "PersistentContext", "Agent", "LLM", "Society", "near_dup", "words",
            "LexicalRetriever", "EmbeddingRetriever", "embedding_available", "KnowledgeRoom", "HypothesisSearcher",
-           "SemanticMemory", "CorrectionMemory", "FindingsMemory", "ReadOnlyTools", "SandboxTools", "investigate",
+           "SemanticMemory", "CorrectionMemory", "FindingsMemory", "ReadOnlyTools", "SandboxTools", "DgxTools", "investigate",
            "TOOL_SCHEMAS", "stream_observer", "squad_solve", "confirm_gain", "prove", "IdeaLedger",
            "BehaviorTrace", "MetaTools", "area_of", "BoardTools", "BOARD_SCHEMAS",
            "WorldSense", "perceive", "signal", "WorldStreamSource", "FileChangeSource", "LedgerSource",
-           "PeerSource", "ClockSource", "EmotionState", "SelfModelSource"]
+           "PeerSource", "ClockSource", "EmotionState", "SelfModelSource",
+           "KnowledgeVault", "VaultHub", "Note", "slug", "link_id",
+           "LearnedRetriever", "load_retriever", "RunStats"] + _TORCH_LAYERS
 __version__ = "0.1.0"
