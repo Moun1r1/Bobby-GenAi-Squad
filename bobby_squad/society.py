@@ -1,9 +1,3 @@
-"""bobby_squad.society — a shared feed so persistent-self agents can speak to and overhear each other.
-
-Minimal and thread-safe: agents broadcast an utterance (usually their reflect() self-summary) and read the
-recent utterances of others (which they fold into working memory). This is what turns N solo agents into a
-society — and where the finding "action-persistence > narrative-persistence under social influence" appears.
-"""
 import threading
 from typing import List, Tuple
 

@@ -1,16 +1,4 @@
 #!/usr/bin/env python3
-"""SELF-ORGANIZING SQUAD that READS REAL CODEBASES END TO END — the squad_reads_pdfs pattern, for code.
-
-Same logic as squad_reads_pdfs.py (no static assignment; agents CLAIM an unclaimed codebase, read it SECTION BY
-SECTION, SELF-PACE by density — the agent itself decides how many sections it can carefully index this turn, the
-auto-split — track EXACTLY which section it reached, and when a codebase is fully read they claim another). The only
-change is read_pdf → read_code: instead of a PDF the agent opens the actual source of a repo, concatenated and
-chunked. BOTH agents read; coverage is self-monitored (the agent says when it's done), never a hardcoded threshold.
-
-The prompt each turn holds only the CURRENT sections (bounded) while the shared INDEX accumulates the whole
-codebase — so a huge repo is read end to end with no context blowup. Run:
-  HORIZON_APPS=/tmp/deep_corpus GA_LLM_URL=... python3 examples/squad_reads_code.py
-"""
 import os
 import re
 import sys

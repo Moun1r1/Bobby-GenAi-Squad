@@ -1,12 +1,3 @@
-"""bobby_squad.ledger — IdeaLedger: the lifecycle + coverage map that fixes a swarm re-proposing the same
-idea and getting stuck on one topic.
-
-Findings cluster into IDEAS (embedding cosine) with a STATUS the harness updates when work finishes
-(open → saturated → proven / contested / dead). The injected signal is STATUS- and AREA-aware: develop OPEN ideas,
-never re-propose CLOSED ones, and go to a NAMED UNEXPLORED area rather than another variant of the over-worked one.
-Closing to `proven` is EVIDENCE-based (resolve() takes a real gain verdict + an independent re-run), never a verdict
-string in prose. Promoted from examples/rd_lab.py to a reusable primitive; pass `areas=` for your own domain map.
-"""
 import re
 from collections import Counter
 

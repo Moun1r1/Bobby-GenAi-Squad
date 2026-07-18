@@ -1,13 +1,3 @@
-"""bobby_squad.room — a PERSISTENT virtual room where a self-organizing squad turns books into reusable
-knowledge.
-
-Books in → (1) a shared, queryable INDEX and (2) a roster of evolving DOMAIN EXPERTS, both persisted to disk so
-knowledge COMPOUNDS across sessions. The squad self-organizes over a shared work queue and autoscales its
-population to the backlog. Experts are keyed by domain (not by ephemeral worker), so they are transferable and
-reusable: `room.load_expert("math.CT")` hands you the evolved specialist to drop into an Agent anywhere.
-
-State (in <state_dir>/): index.jsonl · experts.json · progress.json · pdfs/  → re-running RESUMES and IMPROVES.
-"""
 import json
 import math
 import os

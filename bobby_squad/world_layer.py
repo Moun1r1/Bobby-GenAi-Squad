@@ -1,17 +1,3 @@
-"""bobby_squad.world_layer — a trainable WORLD TRANSFORMER LAYER that feeds the framework's world-state to a
-frozen LM as EMBEDDINGS instead of chat text (see the `world-transformer-layer` vault note).
-
-The chat bottleneck: every step re-serializes the whole world (goal, vault subgraph, memory) into tokens. Instead:
-  WorldEncoder — perceiver-style learned latent slots cross-attend to a bank of world-state vectors (vault-note /
-                 memory embeddings) → K fixed "world tokens" in the LM's embedding space.
-  WorldPrefixLM — prepend those world tokens to the frozen LM's input embeddings. Only the encoder trains; the base
-                 LM is frozen. State enters as vectors (fixed size, differentiable) — chat is the OUTPUT channel only.
-
-Pure torch (no framework deps) so it is pushed to the GPU worker and run there. Trained with a real objective:
-the frozen LM must predict a world-grounded target BETTER with the world tokens than without — that delta is the
-proof the layer works (and that world-as-embedding beats no-world), memory-safe by construction (tiny encoder,
-frozen base).
-"""
 from typing import Optional
 
 import torch

@@ -302,6 +302,19 @@ def search(q: str, collection: str = "knowledge", limit: int = 10):
     return {"query": q, "collection": collection, "hits": get_store().search(collection, q, limit=limit)}
 
 
+@app.get("/primitives")
+def primitives():
+    """The self-extending primitive library: a category tree + per-primitive proof metadata (the distilled cognitive
+    stdlib the ACR flywheel builds — reused across runs, never re-learned)."""
+    return runner.primitive_registry()
+
+
+@app.get("/primitives/recall")
+def primitives_recall(q: str, k: int = 5):
+    """Find a primitive BACK from a task description (semantic memory) — what the engine consults before re-distilling."""
+    return runner.primitive_recall(q, k=k)
+
+
 @app.get("/stats")
 def stats():
     """FRAMEWORK-LEVEL state — aggregate across ALL runs (so the console is never empty, per-run or not)."""

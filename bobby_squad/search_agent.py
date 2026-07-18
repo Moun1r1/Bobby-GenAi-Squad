@@ -1,16 +1,3 @@
-"""bobby_squad.search_agent — a PATIENT hypothesis searcher.
-
-An idea engine that only generates is a rumor mill. This agent is the other half: given a hypothesis, it does not
-accept it and does not reject it on a first glance — it PATIENTLY probes. Each round it designs a FALSIFICATION
-query (what evidence would refute this?), pulls real evidence from the knowledge world, and judges skeptically —
-defaulting to REFUTED unless the evidence actually supports the claim. It keeps going until the verdict stabilizes
-across rounds or a patience budget is spent, so a lucky/unlucky single pass can't decide.
-
-Honesty ceiling (deliberate): retrieval over the world's knowledge can move a hypothesis GROUNDED→PLAUSIBLE or
-→REFUTED — it can check coherence, support/contradiction, and novelty. It CANNOT reach PROVEN: whether a proposed
-primitive actually improves the framework is an empirical claim that needs a gain-proof on real framework data.
-The searcher always emits what that gain-proof would have to measure. It filters; it never fakes a proof.
-"""
 from .planning import extract_json
 
 

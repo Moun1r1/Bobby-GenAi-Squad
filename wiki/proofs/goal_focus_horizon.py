@@ -1,10 +1,4 @@
 #!/usr/bin/env python3
-"""Reproduce the DECISIVE long-run compaction result using the generic component.
-
-48 steps, hard context-clear every 8 (auto via Agent.compact_every), drift-proof prime enumeration.
-PINNED (self-core + progress survive the wipe) vs NAIVE (everything in the wiped window).
-Expected: NAIVE restarts low after every wipe (~largest 37); PINNED resumes and climbs (~largest 200+).
-"""
 import os
 import re
 import sys

@@ -1,18 +1,3 @@
-"""confirm_recursive — the RECURSIVE squad_solve. No orchestrator: a self-organizing squad drains a shared board,
-and the board RECURSES — a unit that a real check finds under-covered is sub-partitioned and re-passed, until each
-unit is exhausted. Embodies the three principles:
-
-  • SQUAD, not solo   — N agents share ONE board (the anti-forgetting memory); nothing dropped across passes.
-  • PLATEAU, not cycles— the loop runs until the board drains; recursion adds finer units for hard/big regions, so
-                         DEPTH AUTO-SCALES to the content's structure (small file → 1 pass; big file → splits until
-                         covered). No fixed budget.
-  • QUALITY GATE=VERIFY— after each pass a REAL check (deterministic grep of that exact line-range) decides if the
-                         unit is done or must be split — run-don't-ask, not 'the agent said so'.
-
-Confirms 76% (flat coordination) → ~100% (recursive coordination), still with no director.
-
-Run:  GA_LLM_URL=... python3 examples/confirm_recursive.py
-"""
 import os
 import re
 import sys

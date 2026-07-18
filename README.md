@@ -1,216 +1,221 @@
-# Bobby — Self-Organizing Generative Agent Squad
+# Bobby: cost-decaying LLM agents via proof-gated distillation to deterministic plugins
 
-**A framework for teams of AI agents that organize themselves.** You give a squad of agents a goal and a model; they
-split the work, read and research on their own, keep the goal and everything they've learned intact over very long
-tasks, prove what actually helped, and can even train a model on what they learned — and **you don't script the
-roles, the prompts, or the steps.** The team figures that out.
+*Reading guide: §2.2–2.4 are the core (the distillation gate, the competence router / OOD test, and the cost model);
+§2.5–2.8 are the agent, memory, and coordination layers; §3 is the benchmark and §4 reproduces every number. Code
+paths are named inline; runnable proofs are under `wiki/proofs/`.*
 
-Pure Python standard library. It talks to any OpenAI-compatible model endpoint — local (vLLM, sglang, Ollama,
-llama.cpp) or a hosted API.
-
-![Bobby Studio — watching a live run: agents miner0/miner1 take invent/experiment/critique moves on a shared idea board (3 ideas · 9 repelled), with the wave/plateau counter and a box to steer the squad mid-run](docs/screenshots/run-conversations.png)
-
-<sub>The optional **Studio** web UI shows the swarm's generative loop live — [all screens »](docs/interface.md).</sub>
-
-## What it actually does
-
-Point it at a big job and a model, and:
-
-- **It reads huge things end to end** — a whole codebase, or a stack of papers — section by section, *without the AI
-  forgetting the earlier parts.* (That "forgetting" is the usual context-window problem; here the prompt stays small
-  no matter how long the job.)
-- **The agents run as a self-organizing team** — they drain a shared to-do board together: no manager, no fixed roles,
-  no hand-written workflow. Work that isn't finished splits into more work; when the board is empty, the job is
-  covered.
-- **They remember and build on it** — what the squad learns goes into a linked knowledge base (like a personal wiki)
-  it reads *and writes back to*, so the next run starts smarter than the last, and an idea can carry from one field
-  into another.
-- **They prove their own gains, honestly** — before trusting any improvement, it runs a real A/B test with controls
-  and **throws out what doesn't help.** Most ideas fail that test — that's the point.
-- **It can train models, not just call them** — it turns what it proved into fine-tuning data (no hand-labeling) and
-  trains a model on an isolated GPU worker, gated by a real pass/fail check.
-- **You can watch it happen** — an optional Studio (a web UI) shows the whole run live instead of a wall of logs.
-
-## How it's different from other agent frameworks
-
-| Most agent frameworks | Bobby |
-|---|---|
-| You script the roles, prompts, and the workflow | The agents **self-organize** — no orchestrator, no fixed roles |
-| Agents lose the thread / hit the context limit on long tasks | The goal + everything learned live in a **pinned memory** that context-trimming never wipes |
-| "It works!" — no proof | Every improvement is **A/B-tested with real controls**; whatever doesn't help is kept out |
-| It only *calls* an LLM | It reads+writes a **knowledge graph** and can **train** a model from what it learned |
-| A library you wire together | A **platform** — watch runs live in a Studio, train on your own GPU |
-
-It runs on any CUDA GPU host (a laptop, a cloud VM, a workstation) — nothing is tied to specific hardware.
-
-**Docs:** [What's new](docs/whats-new.md) · [Architecture](docs/architecture.md) · [Interface / screens](docs/interface.md) · [The engine, layer by layer](docs/engine.md)
+**Abstract.** LLM agents pay a roughly constant per-task inference cost: every task is a fresh generation. We describe a
+runtime that makes that cost *decay* on the reducible part of a workload. When the model repeatedly solves tasks of the
+same capability class, an operator discovers a candidate rule offline, accepts it only if it clears a held-out
+gain-proof, and freezes it as a deterministic local plugin; a per-query router then serves that class with zero model
+calls and abstains back to the model when a query is out of the plugin's competence region. The reducible fraction of
+the workload migrates off the model; the irreducible fraction (open judgment/generation) provably stays on it. On a
+100-ticket benchmark against a no-distillation control (same engine), using a local Qwen3.6-35B-A3B model, this yields
+**−69 % tokens at 80 % vs 74 % accuracy** (single-sector reference run) and **−34 % at 96 % vs 93 %** (6-modality). An
+N = 5-seed replication of the single-sector run gives token reduction **62 % ± 20 %** and router-local **64.8 % ± 20 %**
+(mean ± 95 % Student-t CI). The agents form a self-organizing multi-agent system (SO-MAS):
+decentralized, no orchestrator, no assigned roles — coverage emerges from local moves. Each is a *generative agent*
+instantiated from data — a persona (identity + goal) it self-directs against, with a persistent self that survives
+context-compaction — and the knowledge it produces is written to a shared store, so it is reusable across agents and
+runs. All results are reproduced by scripts in `wiki/proofs/` and 106 deterministic checks.
 
 ---
 
-## Install
+## 1. Problem
+
+Let a workload be a stream of tasks $t_1,\dots,t_N$, each in a capability class $c(t)\in\mathcal C$. A class is
+*reducible* if some deterministic function reproduces the model's outputs on it (extraction, aggregation, mechanical
+transforms, closed algorithms) and *irreducible* otherwise (open judgment, creative generation). A standard agent
+pays $p$ tokens per task regardless of history, so total cost is $C=pN$. The question: can a class, once seen enough,
+be served without the model — safely, i.e. without misapplying a frozen rule to a task it does not fit?
+
+## 2. Method
+
+### 2.1 Runtime: an event-sourced plugin engine
+
+An append-only event log $E$ is the single source of truth; every subsystem is a fold over $E$ (blackboard, router
+state, telemetry). The engine is an event bus + a plugin registry + an interceptor (router) + a stateless worker pool
+(`bobby_squad/engine.py`). A **plugin** is any $\pi:\text{payload}\to\text{result}$ carrying (i) capability tags, (ii)
+a proof record, (iii) a competence region. The registry rejects functional twins by AST fingerprint.
+
+### 2.2 The distillation operator (ACR)
+
+For a family $F$ with held-out examples $H_F=\{(x_j,y_j)\}_{j=1}^m$, define
+
+$$
+\mathcal D(F)=
+\begin{cases}
+\text{freeze}(h^\star), & s(h^\star)\ge\tau\\[2pt]
+\bot\ (\text{stay on the LLM}), & \text{otherwise}
+\end{cases}
+\qquad
+h^\star=\arg\max_{h\in\mathcal H_F} s(h),\quad
+s(h)=\frac1m\sum_{j=1}^m \mathrm{F1}\!\big(h(x_j),y_j\big).
+$$
+
+$\mathcal H_F$ is a typed hypothesis space per modality: LLM-proposed regexes; numeric reducers $\{\text{sum, max,
+min, count, product}\}$; code transforms; or an **LLM-authored** function $\texttt{def solve(x)}$ that is
+sandbox-compiled (restricted builtins) before scoring. $\tau=0.9$. A frozen $h^\star$ is deterministic and costs
+$\approx 0$ per call. Applying $\mathcal D$ across the stream is a fixed-point iteration: classes migrate from the model
+into the plugin set $\Pi$ until only the irreducible classes remain on the model.
+
+### 2.3 Competence routing and the OOD gate
+
+Each plugin $\pi$ stores the embeddings $\{e_k\}_{k=1}^m$ of the queries it was proven on: centroid
+$\mu=\frac1m\sum_k e_k$ and diagonal precision $s_d=\big(\sigma_d^2+\lambda\big)^{-1/2}$ (ridge $\lambda$; diagonal
+because $m$ is small and the full covariance is singular). For a query embedding $q$ the competence distance is the
+diagonal Mahalanobis distance
+
+$$
+\Delta_\pi(q)=\sqrt{\textstyle\sum_d s_d^2\,(q_d-\mu_d)^2},\qquad
+\text{OOD}_\pi(q)\iff \Delta_\pi(q)>\theta_\pi,\quad
+\theta_\pi=\bar\Delta+k\,\mathrm{std}(\Delta),\ k=2.5,
+$$
+
+with $\bar\Delta,\mathrm{std}(\Delta)$ over the in-sample distances. Among plugins covering the query's capability the
+router picks
+
+$$
+\pi^\star=\arg\min_{\pi:\ \neg\text{OOD}_\pi(q)}\Delta_\pi(q),
+$$
+
+and **abstains to the model** if every covering plugin is OOD (fail-safe). This is what lets distinct distilled skills
+share a capability tag without cross-application, and what keeps irreducible tasks on the model. Code: `router.py`.
+
+### 2.4 Cost model
+
+Let $f_\text{local}$ be the router-local fraction (share of tasks served by a plugin). Expected per-task serving cost is
+$\mathbb E[\text{cost}]=p\,(1-f_\text{local})$, and over the stream
+
+$$
+C_\text{ACR}=p\sum_i \mathbb 1[t_i\text{ served by model}] \;+\; \underbrace{\textstyle\sum_{\pi\in\Pi} d_\pi}_{\text{one-time distillation}},
+\qquad C_\text{control}=pN .
+$$
+
+The distillation term $\sum_\pi d_\pi$ is paid once per class and then **amortized** over every subsequent zero-cost
+serve, so its per-task share $\to 0$ as $N$ grows; the marginal cost converges to $p\,(1-f_\text{local})$.
+$f_\text{local}$ is bounded above by $1-\rho_\text{irr}-w$, where $\rho_\text{irr}$ is the irreducible fraction and $w$
+the warmup share (tasks seen before a class distils). The saving is the gap $C_\text{control}-C_\text{ACR}$; it is only
+claimed when confidence intervals separate (§3).
+
+### 2.5 Cross-domain primitives
+
+A *primitive* is a domain-free skeleton $g$ bound per domain by a parameter $\phi_D$ (e.g.
+$g=\texttt{extract\_matching}$, $\phi_D=$ a regex). It is promoted only if it clears the gate on at least $n$ domains it
+was **not** co-fit on:
+
+$$
+\Big|\{\,D:\ s(g_{\phi_D},H_D)\ge\tau\,\}\Big|\ \ge\ n\quad(n=2).
+$$
+
+Promoted primitives are filed by category and indexed in a persistent semantic memory; before distilling anything, the
+engine finds a capability back either **semantically** (cosine over description embeddings) or **structurally** (equal
+AST fingerprint after $\alpha$-renaming), so the same logic is never learned twice. Code: `primitive_intel.py`,
+`primitive_lib.py`.
+
+### 2.6 Generative agents from data
+
+An agent is a triple $(\text{self},\text{tools},\text{moves})$ with self-directed behavior — no per-step prompt. The
+**self** is a persona $(\text{identity},\text{goal},\text{memory})$ instantiated from data: a use case is a role + goal
+(a `DataSpec` in `studio/backend/specs.py`). The agent observes the input; its cycle — select-target → plan → act —
+chooses how to satisfy the goal. The persona is *persistent* — self and progress live in a pinned tier that compaction
+never evicts (`bobby_squad/core.py`) — so a constant character holds across a long session or multi-round world
+(the `persona` / `world` pipelines in `studio/backend/runner.py`).
+
+### 2.7 Reusable knowledge
+
+What an agent learns is written back to a shared **knowledge vault** — linked markdown notes with `[[wikilinks]]`, on
+disk and versioned — which agents *read* (navigate the relevant subgraph for the current step) and *enrich* (new notes,
+auto-linked, deduped, with provenance). Because the store is shared and persistent, knowledge is reusable across agents
+and across runs: run $k{+}1$ starts from run $k$'s notes, and a proven persona/behavior can be replayed. This closes
+the generative → static → plugin loop from the memory side: distilled plugins (§2.2) and vault knowledge are two forms
+of the same reuse — cheap deterministic capability, and navigable memory. Code: `vault.py`.
+
+### 2.8 SO-MAS layer
+
+Agents drain a recursive shared board: a `verify` predicate (run, don't ask) decides done-vs-split, an under-covered
+unit is split and re-queued, and the loop reaches a fixed point (coverage) when the board drains — no orchestrator, no
+assigned roles. Code: `squad.py`, `blackboard.py`.
+
+## 3. Experiments
+
+**Setup.** Seeded generator, exact set-equality grading (no LLM judge). Every run is compared to a **no-ACR control**:
+the identical engine with $\mathcal D$ disabled. Per-task cost counts serving tokens only (0 for a plugin); the one-time
+distillation cost is reported separately and included in the total. Model: Qwen3.6-35B-A3B (sglang, thinking off);
+embeddings: nomic-embed-text (768-d). A gain is reported only when CI-separated:
+$\text{lo}=\Delta-(\mathrm{ci}_\text{ACR}+\mathrm{ci}_\text{ctrl})>0$.
+
+| Run | Tokens ACR (serve + distill) | Tokens ctrl | $\Delta$ | Acc ACR / ctrl | $f_\text{local}$ |
+|---|---|---|---|---|---|
+| Single-sector, $N{=}100$ | 6,603 (4,948 + 1,655) | 21,202 | −69 % | 80 % / 74 % | 72 % |
+| Cross-modal, $N{=}180$, 6 modalities | 14,613 (10,234 + 4,379) | 22,288 | −34 % | 96 % / 93 % | 58 % |
+
+N = 5 seeds (single-sector), mean ± 95 % CI (Student-t, $n{=}5$, $t_{4}{=}2.776$): $f_\text{local}=64.8\%\pm20.0\%$,
+token reduction $62.0\%\pm20.0\%$, accuracy $79.0\%\pm2.2\%$. The wide interval is driven by one seed (seed 5: local
+36 %, 1 promotion) — see obs. (ii). Per-modality (% frozen / accuracy): extract 44/99 · math 67/88 · code
+67/100 · image 67/100 · algo 67/92 · **prose 0/100** — the irreducible class is never distilled and never misrouted,
+exactly as §2.3 requires.
+
+**Observations.** (i) Frozen plugins *exceed* the control's accuracy on reducible classes, because a deterministic rule
+does not make the format/arithmetic slips the model occasionally makes. (ii) The wide N = 5 CI is a real signal: on one
+seed the model proposed a below-$\tau$ regex for one cluster, so that cluster correctly stayed on the model
+(1 promotion vs 2) — distillation reliability is proposal-limited, and the gate refusing a weak rule is the intended
+behavior. (iii) SO-MAS coordination alone lifts coverage from 21 % (one-pass) to 96 % (recursive squad) on the same
+model.
+
+![single-sector golden signals](docs/screenshots/burn-in-golden-signals.png)
+
+## 4. Reproducibility
 
 ```bash
-pip install -e .          # from this folder
+pip install -e .
+export BOBBY_LLM_URL=http://localhost:8000/v1/chat/completions BOBBY_LLM_MODEL=your-model
+export BOBBY_EMBED_URL=http://localhost:11434/api/embed
+
+python wiki/proofs/run_burn_in_live.py          # single-sector burn-in  → §3 row 1
+python wiki/proofs/run_burn_in_mixed_live.py    # cross-modal            → §3 row 2
+python wiki/proofs/run_burn_in_sweep.py         # N=5 CI                 → §3 CI line
 ```
 
-Point it at your model (any OpenAI-compatible server — vLLM, sglang, Ollama, llama.cpp, a hosted API):
+114 deterministic checks (no network) reproduce every mechanism — the gate, the OOD router, cross-domain
+generalization, LLM-authored-code distillation, the persistent library, the SO-MAS coordination world, and the
+execution-graded SWE-bench-style set (real bugs graded by running their tests):
 
 ```bash
-export BOBBY_LLM_URL="http://localhost:8000/v1/chat/completions"
-export BOBBY_LLM_MODEL="your-served-model-id"
-# optional: embeddings (for the idea-space memory/board); any Ollama-compatible /api/embed
-export BOBBY_EMBED_URL="http://localhost:11434/api/embed"
+for t in test_burn_in test_all_layers test_algo_distill test_primitives test_primitive_autoload \
+         test_primitive_lib test_ops_world test_swe_bench; do python wiki/proofs/$t.py; done
 ```
 
-## Quickstart
+Design and code map: [docs/DESIGN.md](docs/DESIGN.md) · benchmark detail: [docs/BENCHMARK.md](docs/BENCHMARK.md) ·
+primitives: [docs/PRIMITIVES.md](docs/PRIMITIVES.md).
 
-```python
-from bobby_squad import Agent, SelfCore, LLM
+## References
 
-agent = Agent(SelfCore(identity="a precise generalist", goal="answer exactly what is asked"), llm=LLM())
-print(agent.carry_out("Write a 3-line haiku about entropy.", max_rounds=2))
-```
+**Multi-agent systems & self-organization.** B. Hayes-Roth, "A blackboard architecture for control," *Artificial
+Intelligence* 26(3), 1985. Stigmergy / self-organizing software (swarm coordination without a central controller).
+Open frameworks: [Mesa](https://github.com/projectmesa/mesa) (agent-based modeling),
+[CrewAI](https://github.com/crewAIInc/crewAI), [LangGraph](https://github.com/langchain-ai/langgraph).
 
-See [`examples/quickstart.py`](examples/quickstart.py).
+**Generative agents & memory.** J. S. Park et al., "Generative Agents: Interactive Simulacra of Human Behavior,"
+arXiv:2304.03442, 2023. N. Shinn et al., "Reflexion," arXiv:2303.11366, 2023.
 
----
+**Skill libraries & self-improvement (the distillation lineage).** G. Wang et al., "Voyager: An Open-Ended Embodied
+Agent with Large Language Models," arXiv:2305.16291, 2023 — an ever-growing library of verified, LLM-authored skills;
+this work adds a gain-proof gate and a cross-domain generalization test. T. Schick et al., "Toolformer,"
+arXiv:2302.04761, 2023.
 
-## The platform — engine · Studio · GPU worker
+**Reasoning & verification.** S. Yao et al., "ReAct," arXiv:2210.03629, 2022. S. Dhuliawala et al.,
+"Chain-of-Verification," arXiv:2309.11495, 2023.
 
-Bobby is three layers, used together or à la carte:
+**Out-of-distribution detection.** P. C. Mahalanobis, "On the generalised distance in statistics," 1936. K. Lee et
+al., "A Simple Unified Framework for Detecting Out-of-Distribution Samples," arXiv:1807.03888, 2018 (Mahalanobis-based
+OOD scoring).
 
-- **The engine** (`bobby_squad`) — the pure-Python primitives below; talks to any OpenAI-compatible endpoint.
-- **Studio** — a live control room. A **FastAPI backend** wraps the engine as pipelines with a streaming event API; a
-  **Next.js frontend** launches runs and lets you *watch the generative loop in real time* — the shared board
-  draining, each agent's target → plan → move → tool stream, the knowledge-vault graph, the proof bench, and a
-  realtime GPU/CPU/memory monitor for the training worker.
-- **The GPU worker** — an isolated, memory-capped **Docker** container the swarm pushes code to and **trains on**. A
-  pre-train safety gate (realtime NVIDIA monitor) refuses to start unless the box has headroom, so a shared GPU is
-  never starved; long runs launch in the background and stream their logs back.
+**World models & software-agent benchmarks.** D. Hafner et al., "DreamerV3," arXiv:2301.04104, 2023.
+C. E. Jimenez et al., "SWE-bench," arXiv:2310.06770, 2023. Baselines:
+[OpenHands](https://github.com/All-Hands-AI/OpenHands), [Aider](https://github.com/Aider-AI/aider).
 
-Everything is dockerized for local deployment.
-
-```mermaid
-flowchart LR
-  FE["Next.js Studio<br/>(watch live)"] <--> BE["FastAPI backend<br/>(engine as pipelines)"]
-  BE <--> ENG["bobby_squad engine<br/>(persistent-self swarm)"]
-  ENG <--> VAULT[("knowledge vault<br/>[[linked notes]]")]
-  BE -. push code + train .-> GPU["isolated GPU worker<br/>(Docker · gated · background)"]
-```
-
----
-
-## The primitives
-
-Everything is a reusable primitive imported from `bobby_squad` — the examples just wire them together.
-
-- **`Agent` + `SelfCore` (persistent-self)** — an agent whose identity, goal, and accumulated progress live in a
-  **pinned tier** that context-compaction never touches, so state from step 1 survives to step N and the prompt
-  stays flat. `research_cycle` (self-select target → plan → tool-grounded execute) and `autonomous_loop`
-  (loop-until-verified) drive it. No per-step prompt scripts the behavior — the loop chooses.
-
-- **`squad_solve(agents, units, work, verify, split)`** — the coverage methodology. A squad drains a **recursive
-  shared board**; `verify` (run-**don't**-ask) decides done-vs-split; a unit that's under-covered is split and
-  re-queued; plateau = the board drains. Answers *"did we cover it all?"* — no orchestrator.
-
-- **`prove(name, control, treatment, negative=, baseline_max=, seeds=)`** — the testing methodology. Not just an
-  A/B: it enforces **validity** — a *headroom* guard (ceilinged baseline → `INCONCLUSIVE`, not a false `DELETE`), a
-  *negative-control* guard (effect appears where it shouldn't → `INVALID`/leak), and *replication* (seeds + 95% CI).
-  Verdicts: `WIRE / MARGINAL / DELETE / INCONCLUSIVE / INVALID / DEFER`.
-
-- **`IdeaLedger`** — a shared idea board with a **deterministic identity floor** (near-duplicate proposals are
-  repelled, so the swarm never re-generates the same idea) and **emergent, agent-assigned states** (no hardcoded
-  lifecycle — the agents label and organize the board themselves). Idea-space novelty gate + active-repulsion
-  frontier (surfaces the *most-spread* ideas so agents are pushed toward gaps, not the dense cluster).
-
-- **`BoardTools`** — gives the swarm the tools to organize its own board (`board` / `set_state` / `merge`) as
-  self-selected moves.
-
-- **`BehaviorTrace` + `MetaTools` (metacognition)** — an agent reviews a peer's *real behavioral trace* and detects
-  its bias (move/area concentration, repetition) and frontier (where novelty collapses) — grounded in deterministic
-  signals, not vibes.
-
-- **`WorldSense`** — a sensing layer: the agent checks many "worlds" (peers, files, the idea frontier, time, its own
-  affect and self-model) and pulls the salient signals into its reasoning as data, never as a directive.
-
-- **`SemanticMemory`** — a novelty-gated semantic store that **self-governs retention by learned usage** (bounded
-  stores evict lowest-value; critical items pinned = a deterministic recall floor). Proven +25% retention / +12.5%
-  downstream generation vs a fixed rule, with a passing negative control.
-
-- **`SandboxTools`** — a full sandbox dev loop (`copy_in` / `write` / `edit` / `run` / `test` / `diff`) so an agent
-  can write and **run** a real experiment and read the outcome — verdicts from execution, not a rubric.
-
----
-
-## Knowledge vault — a navigable graph the swarm reads *and* writes
-
-The swarm's knowledge lives in an **Obsidian-style vault**: a graph of markdown notes with `[[wikilinks]]`, on disk,
-git-versioned and hand-editable. Agents **navigate** it semantically for the context relevant to their current step
-(native prefetch — the local subgraph with its links, not a chunk dump) and **enrich** it with what they learn: new
-notes, auto-linked into the graph, deduped, with source provenance. Many vaults, **cross-linked**; it **hot-reloads**
-when you edit a note. Markdown is the source of truth; embeddings are the index. This is how run *N+1* starts wiser
-than run *N* — and it doubles as a curated store of good/bad examples for the training flywheel below.
-
----
-
-## Training flywheel — generative → static prompt → auto-finetune
-
-The platform closes the loop from *generation* to *weights*, cheapest rung first:
-
-1. **Generative** — the swarm runs its self-directed loop and produces behavior verified by outcome.
-2. **Static prompt / skill** — proven behavior is captured and distilled into a reusable prompt or skill. No training,
-   just crystallized instruction — often enough on its own.
-3. **Auto-finetune (no hand labels)** — a **meta-cognition** module manufactures the data: for each response it
-   recognizes the behavior *pattern*, *critiques* it (coherence / correctness / creativity / safety), generates a
-   better *alternative*, and builds a *preference pair* (chosen ≻ rejected). Those pairs — plus good/bad pairs
-   harvested from the vault, plus pairs auto-harvested from the agent's own scored trajectory (improvement /
-   regression / challenge success) — become a **self-DPO** dataset the model trains on. Iterate: retrain → regenerate
-   from the improved model → retrain.
-
-Training runs on the isolated GPU worker (LoRA, bf16, gradient-checkpointing, memory-safe), from small dense LMs up to
-**MoE foundation models** — LoRA on attention **and the router** with the load-balance aux loss kept on. Every run is
-gated by a real **held-out challenge**: learning is *proven* (held-out loss beats base, the router actually adapted),
-never assumed.
-
-### Encoders — feed the model *world state*, not chat
-
-Trainable encoders extend the loop past text-in-a-prompt. Each is a tiny head on a **frozen** base with a
-self-generating label and a held-out challenge:
-
-- **World layer** — an encoder turns the framework's world-state (vault notes / memory) into *world tokens* prepended
-  to the frozen model, so state enters as **embeddings, not re-serialized chat** — fixed-size regardless of world
-  size, and differentiable.
-- **Encoder bank** — a learned **value head** (a cheap critic that replaces LLM self-critique in the flywheel), a
-  learned **retriever** (which memory to load, ranked by *measured utility* — LM-loss reduction — not surface
-  similarity), a **trajectory monitor** (looping / drifting / converging, from the deterministic behavior signals),
-  and **perception** (non-text observations → world tokens).
-- **Self-model** — the coupled core: the world encoder is the *hub*; the value head and trajectory monitor **condition
-  on world state**. One `assess()` answers, per step, *{world, am-I-looping, how-good}* — metacognition with no
-  hand-written prompts, and the source of the auto-harvested preference pairs above.
-
-```mermaid
-flowchart LR
-  GEN["generative swarm<br/>(proven behavior)"] --> PROMPT["static prompt / skill<br/>(distill · cheapest)"]
-  GEN --> META["meta-cognition<br/>pattern · critique · alternative"]
-  VAULT[("vault good/bad")] --> META
-  TRAJ["scored trajectory"] --> META
-  META --> PAIRS["preference pairs<br/>(chosen ≻ rejected)"]
-  PAIRS --> DPO["self-DPO on GPU worker<br/>(LoRA · held-out gate)"]
-  DPO -->|improved model| GEN
-```
-
----
-
-## The design rules it was built on
-
-1. **No static prompts, no hardcoded roles** — capability comes from a rich *self* + real *tools* + an open
-   *move-space*; the agent self-selects mine / invent / compose / critique / organize. A "critic" is a *move*, not a
-   persona.
-3. **Verify by outcome** — a real run / a strict judge, never the model declaring "done" in prose.
-4. **Prove, don't claim** — every gain goes through `prove` (headroom + negative control + CI) or it isn't trusted.
-5. **Guard-first** — guardable mistakes (identity dedup, recall floor) live in deterministic code; only un-guardable
-   generative choices are left to the model.
-
-## License
+**Engineering patterns.** Event sourcing / CQRS — an append-only log as the single source of truth, all state a
+projection of it.
 
 MIT — see [LICENSE](LICENSE).

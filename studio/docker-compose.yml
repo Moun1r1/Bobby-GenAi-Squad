@@ -1,8 +1,9 @@
 # Bobby Studio — three services: storage (Qdrant vector DB), backend (Python engine + API), frontend (Next.js + tRPC).
 # `docker compose up` from studio/ brings the whole stack live at http://localhost:3000.
 #
-# The engine's LLM + embedding endpoints are supplied via env (point them at your served model / nomic-embed).
-# Defaults use host.docker.internal so a model running on the host (e.g. the DGX tunnel) is reachable.
+# The engine's LLM + embedding endpoints are supplied via env — point them at YOUR served model. Defaults use
+# host.docker.internal so a model/embedder running on the host (any OpenAI-compatible server: vLLM, sglang, Ollama,
+# llama.cpp, or a hosted API) is reachable from inside the containers. Override any of the BOBBY_* vars below.
 services:
   storage:
     image: qdrant/qdrant:v1.12.4
@@ -14,16 +15,30 @@ services:
 
   backend:
     build:
-      context: ..                     # the generative_agentic package dir
+      context: ..                     # the repo root (contains bobby_squad/, studio/, knowledge/)
       dockerfile: studio/backend/Dockerfile
     ports:
       - "8080:8080"
     environment:
       QDRANT_URL: http://storage:6333
-      GA_LLM_URL: ${GA_LLM_URL:-http://host.docker.internal:8002/v1/chat/completions}
-      GA_LLM_MODEL: ${GA_LLM_MODEL:-claude-opus-4-8}
-      GA_EMBED_URL: ${GA_EMBED_URL:-http://host.docker.internal:11435/api/embed}
-      GA_EXTRA_BODY: ${GA_EXTRA_BODY:-{"chat_template_kwargs":{"enable_thinking":false}}}
+      # your served model (OpenAI-compatible chat-completions). 8000 = vLLM/sglang default; use 11434 for Ollama.
+      BOBBY_LLM_URL: ${BOBBY_LLM_URL:-http://host.docker.internal:8000/v1/chat/completions}
+      BOBBY_LLM_MODEL: ${BOBBY_LLM_MODEL:-local-model}
+      # provider-specific request fields merged into every chat call (JSON). Reasoning models (Qwen3/DeepSeek-class)
+      # spend a small max_tokens entirely on hidden reasoning and return EMPTY content — disable thinking so the
+      # answer lands in `content`. Leave empty ({}) for non-reasoning models. Merged via bobby_squad.llm.
+      BOBBY_EXTRA_BODY: ${BOBBY_EXTRA_BODY:-{}}
+      # embeddings for the vault/idea-space index (any Ollama-compatible /api/embed, e.g. nomic-embed-text).
+      # optional — without it the store falls back to a deterministic hashed vector so nothing crashes offline.
+      BOBBY_EMBED_URL: ${BOBBY_EMBED_URL:-http://host.docker.internal:11434/api/embed}
+      # GPU worker access. Deploy this stack ON THE DGX and set DGX_LOCAL=1 → the backend drives the ga_worker GPU
+      # container through the MOUNTED docker socket (local `docker exec`, no ssh, never touches another host); the GPU
+      # pipelines then train on the same box. (Unset = a remote DGX over ssh via DGX_HOST/DGX_USER/DGX_KEY.)
+      DGX_LOCAL: ${DGX_LOCAL:-}
+      DGX_WORKER: ${DGX_WORKER:-ga_worker}
+    volumes:
+      # the DGX's docker socket → backend runs `docker exec ga_worker …` locally when DGX_LOCAL=1
+      - /var/run/docker.sock:/var/run/docker.sock
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:

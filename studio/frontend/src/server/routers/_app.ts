@@ -54,6 +54,9 @@ export const appRouter = router({
 
   // --- persistent substrate: cross-run stats, experts & knowledge (the compounding memory) ---
   stats: publicProcedure.query(() => api("/stats")),
+  primitives: publicProcedure.query(() => api("/primitives")),
+  primitivesRecall: publicProcedure.input(z.object({ q: z.string(), k: z.number().default(5) }))
+    .query(({ input }) => api(`/primitives/recall?q=${encodeURIComponent(input.q)}&k=${input.k}`)),
   knowledgeScatter: publicProcedure
     .input(z.object({ limit: z.number().default(400), collection: z.string().default("knowledge") }))
     .query(({ input }) => api(`/knowledge/scatter?limit=${input.limit}&collection=${input.collection}`)),

@@ -1,16 +1,3 @@
-"""bobby_squad.vault — an Obsidian-style KNOWLEDGE VAULT the swarm NAVIGATES and ENRICHES.
-
-Not chunks in a bag: a GRAPH of markdown notes (frontmatter + [[wikilinks]]) living on disk. An agent enters
-semantically, hops links to see the local subgraph, and WRITES new notes back — from its own experience, its
-behavior (introspection / self-DPO patterns), other pipelines, the framework's own code, and external sources
-(e.g. the HF gemma-challenge repo). The engine stays knowledge-free; the vault is DATA — inspectable, versionable,
-hand-editable, and the same [[link]] convention as the operator's memory.
-
-Two verbs:
-  • navigate(query)  → a bounded, attributed context block (semantic entry note(s) + their linked neighbours).
-                       This is what a PersistentContext.recall hook injects for a step.
-  • enrich(title,…)  → add/append a note, dedup against what's known, auto-link it into the graph, persist to disk.
-"""
 import os
 import re
 from typing import Callable, Dict, List, Optional, Set
@@ -450,15 +437,35 @@ class VaultHub:
         return f"{v}/{n}"
 
     def navigate(self, query: str, per_vault_k: int = 2, hops: int = 1, budget: int = 2200,
-                 per_note: int = 460) -> str:
+                 per_note: int = 460, whole_vault: Optional[str] = None, whole_k: int = 0) -> str:
         """Semantic entry across EVERY vault + cross-vault link-hop → one attributed block. The step sees the local
-        subgraph spanning vaults, with `[[vault/note]]` links it can traverse or enrich."""
+        subgraph spanning vaults, with `[[vault/note]]` links it can traverse or enrich.
+
+        NEEDLE-PRESERVING recall (whole_vault/whole_k, off by default → byte-identical to before): the top-`whole_k`
+        entry notes of `whole_vault` are returned WHOLE (untruncated by per_note) FIRST, before the summarised
+        subgraph. Proven WIRE +51.7 F1 on exceeds-window extractive retrieval (wiki/proofs/probe_generation.py): a
+        summarised/truncated subgraph drops a single needle; the verbatim passage keeps it. The graph walk still runs
+        for multi-hop bridging — this unions verbatim-needle + graph-hop."""
+        parts = ["# Knowledge vaults — navigated across all vaults for this step (apply it; enrich or create as you learn)"]
+        used = len(parts[0])
+        included: set = set()
+        # ── needle-preserving: top-k WHOLE notes from a priority vault (verbatim), before anything is truncated ──
+        wv = self.vaults.get(whole_vault) if whole_vault else None
+        if wv and whole_k > 0:
+            for nid in wv.search(query, k=whole_k):
+                n = wv.notes.get(nid)
+                if not n or (whole_vault, nid) in included:
+                    continue
+                block = (f"\n\n## [[{whole_vault}/{n.id}]] (verbatim)" + (f"  ·  {n.source}" if n.source else "")
+                         + "\n" + n.body.strip())
+                if used + len(block) > budget:
+                    break
+                parts.append(block); used += len(block); included.add((whole_vault, nid))
+        # ── semantic entry + cross-vault link-hop (the summarised subgraph, for multi-hop bridging) ──
         order: List[tuple] = []
         for vn, nid in self._entries(query, per_vault_k=per_vault_k)[:per_vault_k * len(self.vaults)]:
             if (vn, nid) not in order:
                 order.append((vn, nid))
-        if not order:
-            return ""
         frontier = list(order)
         for _ in range(max(0, hops)):
             nxt = []
@@ -472,9 +479,9 @@ class VaultHub:
                     if tv in self.vaults and tn in self.vaults[tv].notes and (tv, tn) not in order:
                         order.append((tv, tn)); nxt.append((tv, tn))
             frontier = nxt
-        parts = ["# Knowledge vaults — navigated across all vaults for this step (apply it; enrich or create as you learn)"]
-        used = len(parts[0])
         for (vn, nid) in order:
+            if (vn, nid) in included:
+                continue
             n = self.vaults[vn].notes.get(nid)
             if not n:
                 continue
@@ -484,7 +491,7 @@ class VaultHub:
             if used + len(block) > budget:
                 break
             parts.append(block); used += len(block)
-        return "".join(parts)
+        return "".join(parts) if len(parts) > 1 else ""
 
     def enrich(self, vault: str, title: str, body: str, source: str = "", links=None, tags=None) -> Optional[str]:
         """Write a note into `vault` (created on demand). `links` may include `[[vault/note]]` cross-vault refs."""

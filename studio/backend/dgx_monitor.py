@@ -6,9 +6,22 @@ STORAGE (disk) · the running DOCKER sessions. An nvidia-smi *query* does NO GPU
 are cached on a short interval and served both as a snapshot and an SSE realtime stream. `is_safe()` is the pre-train
 gate — the resource management that stops a run from starving the shared DGX.
 """
+import os
 import subprocess
 import threading
 import time
+
+
+def _ssh_cmd(host: str):
+    """Build the ssh invocation from DGX_* env (user / key), non-interactive + no host-key prompt so it works from a
+    fresh container the same way `ssh spark` works on the host."""
+    cmd = ["ssh", "-o", "ConnectTimeout=8", "-o", "BatchMode=yes", "-o", "StrictHostKeyChecking=no",
+           "-o", "UserKnownHostsFile=/dev/null", "-o", "LogLevel=ERROR"]
+    key = os.environ.get("DGX_KEY")
+    if key:
+        cmd += ["-i", key, "-o", "IdentitiesOnly=yes"]
+    user = os.environ.get("DGX_USER")
+    return cmd, (f"{user}@{host}" if user else host)
 
 
 class DgxMonitor:
@@ -30,8 +43,15 @@ class DgxMonitor:
 
     def _poll(self) -> dict:
         try:
-            p = subprocess.run(["ssh", "-o", "ConnectTimeout=8", "-o", "BatchMode=yes", self.host, self._POLL],
-                               capture_output=True, text=True, timeout=15)
+            if os.environ.get("DGX_LOCAL"):                 # backend co-located on the DGX → poll the worker locally
+                worker = os.environ.get("DGX_WORKER", self.worker)
+                # `; true` so the trailing `docker ps` (no docker INSIDE the worker) can't fail the whole poll —
+                # GPU/RAM/disk are already captured; the docker-sessions section is simply empty here.
+                p = subprocess.run(["docker", "exec", worker, "bash", "-lc", self._POLL + "\ntrue"],
+                                   capture_output=True, text=True, timeout=15)
+            else:
+                cmd, target = _ssh_cmd(self.host)
+                p = subprocess.run(cmd + [target, self._POLL], capture_output=True, text=True, timeout=15)
         except Exception as e:
             return {"ok": False, "error": str(e)[:140], "ts": time.time()}
         if p.returncode != 0:

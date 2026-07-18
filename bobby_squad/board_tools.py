@@ -1,14 +1,3 @@
-"""board_tools — give the swarm a TOOL to ORGANIZE its own shared board, so states + structure are the agents',
-not a hardcoded lifecycle. Composes the sandbox investigation tools with three board moves the agent self-selects:
-
-  board()              — read the shared board (every idea grouped by the state the swarm gave it, with content).
-  set_state(idea, s)   — assign an idea ANY state that fits the work (exploring / promising / blocked /
-                         ready-to-build / needs-evidence / …). States are emergent — the swarm defines them.
-  merge(keep, fold)    — fold one idea into another when they're the same direction.
-
-The agent picks WHEN to organize (it's a move in the space, not a scripted pass). The deterministic identity FLOOR in
-IdeaLedger.admit still repels regeneration independent of whatever state an agent assigns, so organizing is safe.
-"""
 from .agent_tools import SandboxTools, SANDBOX_SCHEMAS
 
 BOARD_SCHEMAS = [

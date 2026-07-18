@@ -1,13 +1,3 @@
-"""cross_sector_knowledge — the squad reads real papers from MANY knowledge sectors and TRANSFERS ideas across them.
-
-Reads one real arXiv paper from each of 12 sectors (AI, neuroscience/cognition, economics, quantitative biology,
-finance, medical physics, materials science, optimization, signal processing, computational linguistics, complex
-systems, statistics), deposits precise concepts — tagged by sector — into a shared semantic store, then BRIDGES:
-for several distant sector pairs it recalls concepts by MEANING and names a transferable idea. Cross-domain
-knowledge, grounded in real papers (every recalled item is printed).
-
-Run: GA_LLM_URL=... GA_EMBED_URL=... python3 examples/cross_sector_knowledge.py
-"""
 import json
 import os
 import sys

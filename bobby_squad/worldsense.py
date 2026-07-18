@@ -1,20 +1,3 @@
-"""worldsense — let a generative agent CHECK many worlds/contexts (signals) and pull the salient ones into its own
-reasoning, instead of being confined to one fixed subject.
-
-The baseline WorldStream is the BASELINE world (already built). This is the SENSING layer on top of it:
-
-  • a pluggable registry of signal SOURCES — each is a 'world' the agent can check (the society stream is just one:
-    files changing, the idea frontier, what peers are doing, time passing, its own EMOTION, its own SELF-MODEL).
-  • a deterministic salience × recency × novelty rank (guard-first: the ranking is code, not a prompt), with dedup
-    so the same signal isn't re-perceived (the idea-space lesson, applied to perception).
-  • perceive() injects the top signals as OBSERVATION DATA — never a directive — so the agent's own generative loop
-    decides what (if anything) to do with them. That is what makes the world INTERACTIVE and EXPANDABLE: add a
-    source, the agents start attending to a new world; emit back to the WorldStream and peers sense it in turn.
-
-EMOTION and CONSCIOUSNESS are not special-cased — they are just two more sources on the same bus:
-  • EmotionState  — a small affect model (valence/arousal) updated FROM the signals; its mood is itself a signal.
-  • SelfModelSource — the agent sensing its OWN behavioral trace (metacognition on self) = a self-awareness signal.
-"""
 import os
 import time
 

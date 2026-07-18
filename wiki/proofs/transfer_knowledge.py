@@ -1,19 +1,3 @@
-"""transfer_knowledge — show the paper-reading agents produce TRANSFERABLE knowledge.
-
-Reading a paper is only useful if the knowledge OUTLIVES the reader: stored in a shared store, recalled by OTHER
-agents who never read it, and carried ACROSS domains. This proves exactly that on real arXiv papers:
-
-  1. INGEST  — three agents each read ONE real paper (abstract) and deposit precise concepts into a shared
-               semantic index; each becomes a specialist.
-  2. RECALL ACROSS AGENTS — a question from paper A's domain is put to the agent who read paper C. It never read A,
-               so it QUERIES the shared index, recalls A's concepts (that a DIFFERENT agent deposited), and answers
-               grounded in them. Knowledge moved A → store → C.
-  3. CROSS-DOMAIN BRIDGE — an agent is asked which concept from one paper transfers to another's domain; semantic
-               recall bridges by MEANING. That is the transferable-knowledge property.
-
-Grounded: every recalled item is a real concept in the index (printed), so the answers can't be hallucinated.
-Run: GA_LLM_URL=... GA_EMBED_URL=... python3 examples/transfer_knowledge.py
-"""
 import json
 import os
 import sys

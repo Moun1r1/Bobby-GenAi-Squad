@@ -1,13 +1,3 @@
-"""bobby_squad.retrieval — relevance retrieval over a large memory store.
-
-At true scale (thousands of memories) you cannot inject them all, and injecting the most RECENT ones (naive
-truncation/compaction) loses everything old. The fix is to retrieve the RELEVANT subset for the current query.
-`LexicalRetriever` is a stdlib BM25-lite — a real relevance floor, no embedding server needed. `EmbeddingRetriever`
-has the SAME .search interface but matches by MEANING, closing the paraphrase gap lexical can't. Proven on this
-repo's overlap task: mastered-vs-fresh discrimination 0.23 (lexical) → 0.49 (embedding) — see gains/overlap_gains.py.
-An embedding-free label trick (verbal-report canonical labels) was tested and LOST (over-merges short concepts);
-embeddings are the real lever for overlap recognition.
-"""
 import json
 import math
 import os

@@ -1,8 +1,3 @@
-"""bobby_squad.dedup — deterministic near-duplicate detection for progress-dedup.
-
-Fixes the "looping" failure: agents redo a step they already did. We compare content-word overlap (Jaccard +
-containment), ignoring latex/code spans so structurally-distinct math/code steps aren't falsely merged.
-"""
 import re
 from typing import Iterable, Set
 

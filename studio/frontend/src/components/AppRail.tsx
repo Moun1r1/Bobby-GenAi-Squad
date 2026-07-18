@@ -4,7 +4,7 @@ export type Page =
   | "chat" | "world" | "timeline" | "compare"
   | "workflows" | "datasets"
   | "squad" | "ideaboard"
-  | "experiments"
+  | "experiments" | "primitives"
   | "compute"
   | "memory" | "vault" | "knowmap" | "notebook"
   | "analytics" | "cost" | "models" | "approvals" | "settings";
@@ -19,7 +19,7 @@ export const LAYERS: Layer[] = [
     path: "M12 5v14M5 12h14" },
   { id: "squad", label: "Squad", note: "coordination — squad_solve", pages: ["squad", "ideaboard"],
     path: "M17 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M9 8a3 3 0 100-6 3 3 0 000 6zM21 20v-2a4 4 0 00-3-3.9" },
-  { id: "prove", label: "Prove", note: "verify-by-outcome", pages: ["experiments"],
+  { id: "prove", label: "Prove", note: "verify-by-outcome", pages: ["experiments", "primitives"],
     path: "M9 3v6l-5 9a2 2 0 002 3h12a2 2 0 002-3l-5-9V3M8 3h8M7 15h10" },
   { id: "compute", label: "Compute", note: "GPU worker · training", pages: ["compute"],
     path: "M4 4h16v12H4zM8 20h8M12 16v4M9 8h6M9 11h6" },
@@ -32,7 +32,7 @@ export const LAYERS: Layer[] = [
 export const PAGE_LABEL: Record<Page, string> = {
   chat: "Conversations", world: "World", timeline: "Replay", compare: "Compare",
   workflows: "Workflows", datasets: "Datasets", squad: "Squad", ideaboard: "Idea board",
-  experiments: "Proof bench", compute: "Compute", memory: "Memory", vault: "Knowledge vault", knowmap: "Knowledge map", notebook: "Notebook",
+  experiments: "Proof bench", primitives: "Primitives", compute: "Compute", memory: "Memory", vault: "Knowledge vault", knowmap: "Knowledge map", notebook: "Notebook",
   analytics: "Analytics", cost: "Cost", models: "Models", approvals: "Approvals", settings: "Settings",
 };
 

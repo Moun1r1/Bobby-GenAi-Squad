@@ -1,24 +1,3 @@
-"""connectivity_dev_e2e — the squad improves its OWN inter-agent connectivity, end to end, exactly like the full
-dev test: DISCOVER → INVENT → BUILD+VERIFY → PROVE → CHALLENGE. The agents THINK UP the connectivity mechanisms and
-BUILD them; nothing here tells them what the mechanism should be (no static design, no persona).
-
-The premise, in the agents' own words to solve: today the generative agents only PULL a shared signal when they act
-(sparse, turn-based). The goal is MUCH richer, more continuous interaction BETWEEN the agents. What that mechanism
-IS — directed messaging, reactive push, a connectivity graph, typed exchanges, something else — is for the squad to
-invent, ground in the real code, build as runnable code, and prove.
-
-  1. DISCOVER   (squad_solve)                : map how the agents interact TODAY across the real connectivity code.
-  2. INVENT     (self-organizing squad + IdeaLedger.admit) : agents propose NEW connectivity mechanisms — their own
-                                                ideas, grounded in that code, deduped in idea-space (no re-proposing).
-  3. BUILD+VERIFY (autonomous_loop + verify)  : an agent BUILDS the top mechanism as a runnable sandbox prototype;
-                                                'done' = a REAL run prints a MECH: marker, not the model's word.
-  4. PROVE      (prove methodology)           : measure the prototype raises interaction density vs the sparse
-                                                baseline, with a negative control (a shuffled/no-op mechanism).
-  5. CHALLENGE  (adversarial)                 : an independent agent reproduces-or-refutes the built prototype.
-
-Run: GA_LLM_URL="http://localhost:8002/v1/chat/completions" GA_EMBED_URL="http://localhost:11435/api/embed" \
-     GA_EXTRA_BODY='{"chat_template_kwargs":{"enable_thinking":false}}' python3 examples/connectivity_dev_e2e.py
-"""
 import os
 import re
 import subprocess

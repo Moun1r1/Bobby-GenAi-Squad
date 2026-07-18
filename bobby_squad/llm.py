@@ -1,10 +1,3 @@
-"""bobby_squad.llm — a pluggable, provider-agnostic chat backend.
-
-The whole library only needs a callable  (messages: list[dict], max_tokens: int) -> str.  `LLM` is a stdlib
-default that talks to any OpenAI-compatible /v1/chat/completions endpoint (configurable via GA_LLM_URL /
-GA_LLM_MODEL). Swap it for your own callable to route through a gateway, a hosted API, etc. Any provider-specific
-request fields go in GA_EXTRA_BODY as a JSON object and are merged into the request body.
-"""
 import json
 import os
 import urllib.request
