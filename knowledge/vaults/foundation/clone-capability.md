@@ -28,7 +28,6 @@ finally:
 ```
 
 ## read further
-- squad_solve source: [[repos/core]] · git strategy: `.claude/decisions/DEC-2026-05-30-git-strategy.md`
 - Multi-agent patterns (map-reduce over agents): AutoGen https://github.com/microsoft/autogen
 
 ## dpo
