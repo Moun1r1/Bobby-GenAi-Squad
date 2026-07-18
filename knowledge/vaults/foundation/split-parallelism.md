@@ -24,13 +24,6 @@ Compose them (3D parallelism): FSDP across nodes × TP within a node × DP over 
 - `jax.jit(in_shardings=…, out_shardings=…)` or `shard_map` for explicit per-shard programs (`pjit` = older
   spelling). You declare layout; XLA inserts the collectives. MoE routing shards experts across the model axis.
 
-## GB10 (DGX Spark) reality — measured here
-- **Unified memory (128 GB)**: CPU + GPU share one pool. `nvidia-smi` VRAM = `N/A` → gate safety on **system RAM
-  free**, not VRAM. RAM-high ≠ throughput-bound.
-- One physical GB10 → sharding is mostly FITTING the unified pool + MoE expert placement, not multi-node TP.
-- `OLLAMA_NUM_PARALLEL=16` + `FLASH_ATTENTION=1` + `MAX_LOADED=2` → 6.7× throughput (26→175 tok/s): the "5-wide
-  ceiling" was default parallelism, not hardware.
-- Always cap KV: `num_ctx:8192`. 128k context blows the KV cache and freezes the box ([[perf-memory]]).
 
 ## Rule
 Pick the smallest split that FITS with headroom: single-device + LoRA first; FSDP when params don't fit; TP/PP only
