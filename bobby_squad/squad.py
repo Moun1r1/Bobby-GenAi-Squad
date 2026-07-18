@@ -1,11 +1,3 @@
-"""bobby_squad.squad — squad_solve: the proven orchestration primitive. ORGANIZATION BEATS RAW INTELLIGENCE.
-
-There is no orchestrator / director. A self-organizing SQUAD drains a shared work-BOARD (coordination, not a boss);
-a run-DON'T-ask VERIFY gate decides whether each unit is done or must be SPLIT (recursion → depth self-scales to the
-content); the loop ends when the board drains (PLATEAU, no fixed budget). This is the reusable form of the pattern
-measured in examples/confirm_*.py: raw 1-pass 21% → squad+shared-memory 56% → coordination 76% → recursive 96%
-(same model, repo function-coverage). Plug in your own (units, work, verify, split) for any task.
-"""
 from collections import deque
 
 

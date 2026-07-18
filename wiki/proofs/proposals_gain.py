@@ -1,17 +1,3 @@
-"""proposals_gain — the STRONG MODEL proves the swarm's proposals (the teaching-flywheel: local generated broad,
-I write the real confirm_gain A/Bs). Each experiment is FAIR — the mechanism can genuinely lose; the control is a
-real alternative, not a strawman. Deterministic where possible (no API), embeddings only where retrieval is the point.
-
-Proposals proven here:
-  1. Memory-Gate      — consolidate IMPORTANT working-tier items at compaction vs consolidate-everything (noise fills
-                        the bounded pinned store and evicts the important ones).
-  2. CWBU             — aggregate agent claims weighted by confidence vs unweighted majority (helps iff confidence
-                        tracks reliability — honest: if it doesn't, no gain).
-  3. Active-Design    — pick the next probe by info-gain (halving) vs linear scan, to identify a target.
-  4. Synapse          — hybrid (lexical+embedding) retrieval vs embedding-only, on MIXED exact/paraphrase queries.
-
-Run:  GA_EMBED_URL=... python3 gains/proposals_gain.py
-"""
 import os
 import random
 import statistics

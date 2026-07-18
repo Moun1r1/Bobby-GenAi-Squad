@@ -1,14 +1,3 @@
-"""full_dev_test — a REAL end-to-end dev run through the whole reusable stack (package primitives only):
-
-  1. DISCOVER   — squad_solve: a self-organizing squad coordinates + recurses to MAP a target's functions (coverage).
-  2. BUILD+VERIFY — Agent.autonomous_loop + run-don't-ask verify(): an agent writes a real script, runs it, and only
-                    finishes when a REAL run confirms it (not 'the model said done'). Watched live via stream_observer.
-  3. PROVE      — prove(): the enforced testing methodology on a real mechanism (self-evolving memory), WITH a
-                    negative control + headroom guard, so the verdict is trustworthy.
-
-Everything is imported from `bobby_squad` — no bespoke plumbing. Run:
-  GA_LLM_URL=... GA_EMBED_URL=... python3 examples/full_dev_test.py
-"""
 import glob
 import os
 import random

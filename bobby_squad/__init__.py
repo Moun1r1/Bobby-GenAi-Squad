@@ -1,21 +1,24 @@
-"""bobby_squad — a domain-free persistent-self component for long-running LLM agents.
-
-The proven core (see FINDINGS.md): put an agent's identity + goals + accumulated progress in a PINNED tier that
-context-compaction can never touch, re-ground it periodically, and it maintains long-term goal persistence,
-stable identity, and context-independent reasoning — with a ~5-6x gain in sustained progress across real
-context wipes vs. a naive agent. No virtual world required.
-
-Quickstart:
-    from bobby_squad import Agent, SelfCore, LLM
-    a = Agent(SelfCore(identity="a precise enumerator", goal="list primes in increasing order"), llm=LLM())
-    while not a.converged():
-        step = a.next_step("Output the next prime, digits only.")
-        if step is None: break
-"""
 from .core import SelfCore, PersistentContext, Agent, stream_observer
 from .squad import squad_solve
+from .sheaf_consensus import sheaf_consensus, make_consensus_harvest, ConsensusResult
+from .soma_flywheel import PluginStore, DistillationCorpus
 from .proving import confirm_gain, prove
 from .ledger import IdeaLedger
+from .jobs import JobRegistry
+from .dedup_ast import AstDedup, fingerprint
+from .engine import Engine, EventLog, PluginRegistry, Plugin, Event, plugin_router
+from .router import OODGate, ood_plugin_router, competence_router
+from . import burn_in
+from . import primitive_intel
+from . import primitive_lib
+from .ops_world import OpsWorld, WORKFLOWS, operate
+from . import swe_bench
+from .fsm import FSM, cluster_match
+from .telemetry import Telemetry
+from .surrogate import Surrogate, code_features
+from .blackboard import Blackboard
+from .harness import Scenario, DataCollector, Report, verdict as harness_verdict, ci95
+from . import synthbench
 from .llm import LLM
 from .society import Society
 from .dedup import near_dup, words
@@ -45,10 +48,16 @@ except ImportError:                                        # torch not installed
 __all__ = ["SelfCore", "PersistentContext", "Agent", "LLM", "Society", "near_dup", "words",
            "LexicalRetriever", "EmbeddingRetriever", "embedding_available", "KnowledgeRoom", "HypothesisSearcher",
            "SemanticMemory", "CorrectionMemory", "FindingsMemory", "ReadOnlyTools", "SandboxTools", "DgxTools", "investigate",
-           "TOOL_SCHEMAS", "stream_observer", "squad_solve", "confirm_gain", "prove", "IdeaLedger",
+           "TOOL_SCHEMAS", "stream_observer", "squad_solve", "sheaf_consensus", "make_consensus_harvest",
+           "ConsensusResult", "PluginStore", "DistillationCorpus", "confirm_gain", "prove", "IdeaLedger",
+           "JobRegistry", "AstDedup", "fingerprint",
+           "Engine", "EventLog", "PluginRegistry", "Plugin", "Event", "plugin_router",
+           "OODGate", "ood_plugin_router", "competence_router", "burn_in",
+           "FSM", "cluster_match", "Telemetry", "Surrogate", "code_features", "Blackboard",
+           "Scenario", "DataCollector", "Report", "harness_verdict", "ci95", "synthbench",
            "BehaviorTrace", "MetaTools", "area_of", "BoardTools", "BOARD_SCHEMAS",
            "WorldSense", "perceive", "signal", "WorldStreamSource", "FileChangeSource", "LedgerSource",
            "PeerSource", "ClockSource", "EmotionState", "SelfModelSource",
            "KnowledgeVault", "VaultHub", "Note", "slug", "link_id",
-           "LearnedRetriever", "load_retriever", "RunStats"] + _TORCH_LAYERS
+           "LearnedRetriever", "load_retriever", "RunStats", "OpsWorld", "WORKFLOWS", "operate"] + _TORCH_LAYERS
 __version__ = "0.1.0"

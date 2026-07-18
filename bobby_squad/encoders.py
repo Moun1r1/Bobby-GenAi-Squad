@@ -1,12 +1,3 @@
-"""bobby_squad.encoders — the ENCODER BANK: one trainable head per faculty an agent must grow, all on the
-proven world-layer pattern (frozen base where needed + a tiny trainable head + a SELF-GENERATING label + a real
-held-out challenge). Pure torch so each is pushed to the GPU worker and trained there.
-
-  ValueHead        — a learned critic: (prompt,response) hidden → scalar quality. Label = self-DPO chosen≻rejected.
-  RetrievalEncoder — a learned bi-encoder: which item to load for a query. Label = the item that answers (vs distractors).
-  TrajectoryMonitor— reads a move/tool/result trace → looping/drifting/converging. Label = the deterministic signals.
-  (Perception       — the world layer with a non-text observation embedder; reuses world_layer.WorldPrefixLM.)
-"""
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

@@ -51,6 +51,9 @@ export function toMsg(e: Ev): Msg | null {
     case "wave": return S(`Wave ${e.n}${e.met != null ? ` · ${e.met}/${e.total} criteria` : e.new != null ? ` · +${e.new} new` : ""}${e.dry ? ` · plateau ${e.dry}` : ""}`);
     case "day": return S(`Day ${e.day} — ${e.clean}/${e.total} clean (${Math.round((e.rate || 0) * 100)}%)`);
     case "board": return S(`Board — ${e.n_ideas} ideas${e.repelled ? ` · ${e.repelled} repelled` : ""}`);
+    case "burn": return e.phase === "acr"
+      ? S(`Burn-In ${e.i}/${e.n} — local ${Math.round((e.local || 0) * 100)}% · ${e.serve} serve tok · ${e.promotions} frozen`)
+      : S(`No-ACR control ${e.i}/${e.n} — ${e.serve} tok (all LLM)`);
     case "error": return S(e.message || "error", "error");
     default: return null; // tool/tool_done/move_end/cycle/signal/flags/memory/playbook/agent/goal/teams/done stay out of the thread
   }

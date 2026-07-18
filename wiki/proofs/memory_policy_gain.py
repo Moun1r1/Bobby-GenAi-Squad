@@ -1,17 +1,3 @@
-"""memory_policy_gain — does a SELF-EVOLVING memory policy extract better generative knowledge than a FIXED policy,
-at equal capacity? Now measured on the REAL wired engine (SemanticMemory policy="value" vs "fifo") with TWO metrics:
-
-  1. RETENTION availability (deterministic, fast) — after the stream, what fraction of the USED topics still has its
-     item in the store. The ceiling on what can be generated.
-  2. GENERATION accuracy (real LLM) — for each held-out query, retrieve top-k from the real memory, have ONE model
-     instance (test mode) answer from that context, and check it produced the ground-truth code. End-to-end proof
-     that better retention → better GENERATION, not just a proxy.
-
-Both policies sit on the DETERMINISTIC RECALL FLOOR (items add()'d critical=True are pinned, never evicted), so
-must-keep coverage is guaranteed regardless of policy (the ACR split). No recursion: gains via confirm_gain.
-
-Run:  GA_LLM_URL=... GA_EMBED_URL=... python3 gains/memory_policy_gain.py
-"""
 import os
 import random
 import re

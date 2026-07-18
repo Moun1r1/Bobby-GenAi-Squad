@@ -1,16 +1,3 @@
-"""customer_service_world — a virtual-world conflict sim / customer-service training ground.
-
-Reuses the engine's parts, nothing improvised:
-  • PERSONAS from the defined set (a sampled persona set in data/personas.jsonl) — each real persona is overlaid with an
-    angry emotional state + a concrete issue to become an in-character angry customer.
-  • KNOWLEDGE — a de-escalation knowledge base the SUPPORT agent is grounded in (retrieved per message), so it knows
-    how to manage anger instead of winging it.
-  • SUPERVISOR — a second agent that REVIEWS the support agent's behavior each turn (the metacognition idea) and gives
-    one concrete coaching tip to mitigate impact; the support agent (persistent-self) folds the coaching in.
-
-Deterministic scoring: customer self-rated mood (opening → final) and policy adherence (case number per reply).
-Run: PERSONAS=examples/data/personas.jsonl GA_LLM_URL=... python3 examples/customer_service_world.py
-"""
 import json
 import os
 import re

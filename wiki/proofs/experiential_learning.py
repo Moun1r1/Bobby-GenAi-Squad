@@ -1,24 +1,3 @@
-"""experiential_learning — many real-world sims where an agent gets better OVER TIME with NO knowledge base.
-
-The customer-service ground gave the support agent a de-escalation KB. Here we remove the KB entirely and ask a
-harder question: can an agent learn to handle difficult people PURELY from its own experience — no rules handed in,
-no retrieval, nothing but what it lived through?
-
-The mechanism is the engine's own two-tier memory, used as a learning loop:
-  • After each episode the learner REFLECTS on what just happened and writes ONE lesson IN ITS OWN WORDS
-    (a generative self-authored takeaway — not a rule we wrote), and pins it to the durable tier.
-  • The working transcript is then wiped (compact). Only the self-authored lessons carry forward.
-  • Next episode, those accumulated lessons are the only thing that changed — so any improvement is learned, not given.
-
-MANY WORLDS (same mechanism, different conflict): each reuses a real persona from the defined set as a DIFFICULT
-counterpart the learner must move on a deterministic 1-10 metric.
-
-HONEST PROOF (prove-doctrine): a memory-less CONTROL twin faces the SAME counterparts each episode but never keeps a
-lesson (wiped every episode). If the learner's curve rises above the control's, experience — not the model — did it.
-The control is the negative control: if IT also rises, the effect is an artifact and we say so.
-
-Run: GA_LLM_URL=... python3 examples/experiential_learning.py
-"""
 import json
 import os
 import re

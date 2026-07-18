@@ -1,9 +1,3 @@
-"""bobby_squad.proving — confirm_gain: prove a gain with ONE deterministic A/B, not a squad, not a vibe.
-
-The canonical quality gate for "does this change actually help?": run control() vs treatment(), measure the
-relative gain, emit a WIRE / MARGINAL / DELETE / DEFER verdict against a stated threshold. One instance, one number,
-no recursion — bounded and observable. (Formerly gains/gain_test.py; promoted to a reusable package primitive.)
-"""
 import json
 import statistics
 

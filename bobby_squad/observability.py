@@ -1,15 +1,3 @@
-"""bobby_squad.observability — RunStats: turn a swarm run into publish-ready, machine-readable stats.
-
-Two hooks, zero behaviour change:
-  • `metered = stats.meter(llm)` wraps ANY LLM callable to record per-call latency + token usage + errors
-    (delegates every other attribute, incl. `.chat` / `.last_usage`, so it is a drop-in).
-  • `Agent(observer=stats.observer)` counts moves / tool calls / cycles per agent from the live event stream.
-
-Then `stats.round(...)` snapshots per-round health, and `stats.finalize(...)` emits ONE dict (and `save()` writes
-JSON) with totals, latency percentiles, per-agent activity, per-round series, and a `stability` block (peak board,
-dedup-reject rate, plateau round, error rate). It is the reusable substrate behind the published stats — run the
-harness, cite `stats.json`; no hand-copied numbers.
-"""
 import json
 import time
 from collections import defaultdict

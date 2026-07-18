@@ -1,16 +1,3 @@
-"""bobby_squad.correction_memory — the PROVEN memory-gains mechanism, as a reusable primitive.
-
-Proven in `gains/correction_memory_gains.py` (2026-07-08): the way to stop an agent reproducing mistakes WITHOUT
-progressively overloading context and WITHOUT prompt-stuffing rules (which fights generative cognition) — store
-corrections (or findings) as MEMORY and RETRIEVE the top-k relevant ones per situation.
-
-  A. ECONOMY   — only top-k are ever injected → prompt stays O(k) flat as the store grows unbounded. (WIRE: 9.3×)
-  B. EFFICACY  — the relevant item is surfaced through a paraphrase gap.                                (WIRE: 0.88 recall@5, +0.78 over random)
-  C. RETENTION — add() is novelty-GATED (max cosine < τ) → the store self-compresses recurring items.  (WIRE in-regime: 86→55, 8/8 kept)
-
-One class, two uses: a CorrectionMemory (past mistakes → don't repeat) and a novelty gate for findings (plateau).
-Reuses EmbeddingRetriever (nomic-embed; lexical fallback when no endpoint).
-"""
 from typing import Callable, List, Optional
 
 from .retrieval import EmbeddingRetriever, _cos

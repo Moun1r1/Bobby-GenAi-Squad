@@ -1,17 +1,8 @@
-"""agent_tools — READ-ONLY investigation tools + a tool-use loop, so a generative agent can look at a codebase
-the way Claude does (grep / read / ls / find) instead of being fed static material and guessing.
-
-Why: the biggest confabulation source was agents claiming "X is missing/broken" from a partial view. Give them the
-ability to VERIFY — grep for the symbol, read the actual body — and the "it's missing" class of error goes away,
-because the agent can check before it claims.
-
-Safety: strictly read-only, sandboxed to a root directory. No writes, no arbitrary shell, no path escape. Tools
-run via subprocess with fixed argv (no shell=True) or pure Python, with output + time caps.
-"""
 import difflib
 import json
 import os
 import re
+import shlex
 import subprocess
 import time
 
@@ -408,10 +399,20 @@ class DgxTools(SandboxTools):
                 pass
 
     def _ssh(self, cmd: str, timeout: int):
+        """Run a command against the DGX docker. DGX_LOCAL (backend co-located on the DGX) → run the docker CLI LOCALLY
+        via the mounted socket (no ssh, no host hop). Otherwise ssh to a remote DGX host (DGX_KEY / DGX_USER)."""
         import subprocess
+        if os.environ.get("DGX_LOCAL"):
+            full = ["bash", "-lc", cmd]
+        else:
+            opts = ["-o", "ConnectTimeout=10", "-o", "BatchMode=yes", "-o", "StrictHostKeyChecking=no",
+                    "-o", "UserKnownHostsFile=/dev/null", "-o", "LogLevel=ERROR"]
+            if os.environ.get("DGX_KEY"):
+                opts += ["-i", os.environ["DGX_KEY"], "-o", "IdentitiesOnly=yes"]
+            target = f"{os.environ['DGX_USER']}@{self.host}" if os.environ.get("DGX_USER") else self.host
+            full = ["ssh", *opts, target, cmd]
         try:
-            p = subprocess.run(["ssh", "-o", "ConnectTimeout=10", "-o", "BatchMode=yes", self.host, cmd],
-                               capture_output=True, text=True, timeout=timeout)
+            p = subprocess.run(full, capture_output=True, text=True, timeout=timeout)
             return p.returncode, (p.stdout + p.stderr)
         except subprocess.TimeoutExpired:
             return 124, "(timed out)"
@@ -494,6 +495,12 @@ class DgxTools(SandboxTools):
         if not self._ensured:
             self.ensure_worker()
         try:
+            if os.environ.get("DGX_LOCAL"):                 # co-located: docker cp straight into the worker, no scp
+                rc, out = self._ssh(f"docker exec {self.worker} mkdir -p {self.workdir}/{os.path.dirname(path)}; "
+                                    f"docker cp {shlex.quote(src)} {self.worker}:{self.workdir}/{path}", 120)
+                self._emit(action="push", path=path, exit=rc)
+                return (f"pushed {path} → worker {self.worker}:{self.workdir}/{path}" if rc == 0
+                        else f"(docker cp failed: {out.strip()[:160]})")
             stage = f"/tmp/{self.worker}_stage"
             self._ssh(f"mkdir -p {stage}/{os.path.dirname(path)}".rstrip("/"), 20)
             p = subprocess.run(["scp", "-q", src, f"{self.host}:{stage}/{path}"], capture_output=True, text=True, timeout=180)
@@ -511,6 +518,11 @@ class DgxTools(SandboxTools):
         dst = self._safe_sandbox(path)
         os.makedirs(os.path.dirname(dst) or self.sandbox, exist_ok=True)
         try:
+            if os.environ.get("DGX_LOCAL"):                 # co-located: docker cp straight out of the worker, no scp
+                rc, out = self._ssh(f"docker cp {self.worker}:{self.workdir}/{path} {shlex.quote(dst)}", 120)
+                self._emit(action="pull", path=path, exit=rc)
+                return (f"pulled {path} → sandbox ({os.path.getsize(dst)} bytes)"
+                        if rc == 0 and os.path.exists(dst) else f"(docker cp failed: {out.strip()[:160]})")
             stage = f"/tmp/{self.worker}_stage"
             rc, out = self._ssh(f"mkdir -p {stage}/{os.path.dirname(path)}; "
                                 f"docker cp {self.worker}:{self.workdir}/{path} {stage}/{path}", 60)

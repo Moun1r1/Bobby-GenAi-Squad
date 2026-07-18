@@ -918,7 +918,7 @@ def pipe_world_layer(run: Run) -> dict:
     os.makedirs(sandbox, exist_ok=True)
     tools = DgxTools(PKG, sandbox, observer=run.observe)
     tools.write("world_examples.jsonl", "\n".join(_json.dumps(r) for r in rows))
-    tools.write("world_layer.py", open(os.path.join(PKG, "world_layer.py")).read())
+    tools.write("world_layer.py", open(os.path.join(PKG, "bobby_squad", "world_layer.py")).read())
     tools.write("train_world.py", _WORLD_TEMPLATE.format(model=model, epochs=int(run.params.get("epochs", 10)), k=int(run.params.get("k", 16))))
     for f in ("world_examples.jsonl", "world_layer.py", "train_world.py"):
         tools.dgx_push(f)
@@ -980,7 +980,7 @@ def _run_on_worker(run: Run, prefix: str, files: dict, run_script: str, result_k
     sandbox = os.path.join(PKG, "out", f"{prefix}_{run.id[:8]}")
     os.makedirs(sandbox, exist_ok=True)
     tools = DgxTools(PKG, sandbox, observer=run.observe)
-    files = {**files, "encoders.py": open(os.path.join(PKG, "encoders.py")).read()}
+    files = {**files, "encoders.py": open(os.path.join(PKG, "bobby_squad", "encoders.py")).read()}
     for name, content in files.items():
         tools.write(name, content)
     for name in files:
@@ -1264,7 +1264,7 @@ def pipe_perception(run: Run) -> dict:
         obs = [centers[c][j] + _r.gauss(0, 0.3) for j in range(D)]
         rows.append({"world": [obs], "prompt": prompt, "target": " " + c, "split": ("holdout" if i % 5 == 0 else "train")})
     files = {"world_examples.jsonl": "\n".join(_json.dumps(r) for r in rows),
-             "world_layer.py": open(os.path.join(PKG, "world_layer.py")).read(),
+             "world_layer.py": open(os.path.join(PKG, "bobby_squad", "world_layer.py")).read(),
              "train_world.py": _WORLD_TEMPLATE.format(model=model, epochs=int(run.params.get("epochs", 12)), k=int(run.params.get("k", 16)))}
     out, res = _run_on_worker(run, "perception", files, "train_world.py", "world_result")
     if out is None:
@@ -1358,7 +1358,7 @@ def pipe_self_model(run: Run) -> dict:
              for i in range(200)]
     files = {"value.jsonl": "\n".join(_json.dumps(r) for r in vrows),
              "traj.jsonl": "\n".join(_json.dumps(r) for r in trows),
-             "world_layer.py": open(os.path.join(PKG, "world_layer.py")).read(),
+             "world_layer.py": open(os.path.join(PKG, "bobby_squad", "world_layer.py")).read(),
              "self_model_train.py": _SELF_MODEL_TEMPLATE.format(epochs=int(run.params.get("epochs", 12)))}
     out, res = _run_on_worker(run, "selfmodel", files, "self_model_train.py", "self_model_result")
     if out is None:
@@ -1458,10 +1458,10 @@ _QWEN_MOE_LORA_TEMPLATE = '''"""LoRA fine-tune a Qwen3-MoE with the ROUTER inclu
 qwen-moe-training note). Proves the router actually trained (router adapters present + held-out adapter beats base) —
 not the documented all-linear no-op. Memory-safe: bf16 + sdpa (flash-attn won't build on GB10) + gradient_checkpointing,
 batch 1, completion-masked."""
-import json, torch
+import json, os, torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
-from peft import LoraConfig, get_peft_model
-MODEL="{model}"; EPOCHS={epochs}
+from peft import LoraConfig, get_peft_model, PeftModel
+MODEL="{model}"; EPOCHS={epochs}; ADAPTER_DIR="{adapter_dir}"; RESUME={resume}
 rows=[json.loads(l) for l in open("sft.jsonl") if l.strip()]
 train=[r for r in rows if r.get("split")!="holdout"]; held=[r for r in rows if r.get("split")=="holdout"]
 print(f"[qwen-lora] {{len(train)}} train / {{len(held)}} held-out", flush=True)
@@ -1477,11 +1477,19 @@ if is_moe:
 targets=["q_proj","k_proj","v_proj","o_proj"] + (["gate"] if is_moe else ["gate_proj","up_proj","down_proj"])
 print(f"[qwen-lora] model_type={{getattr(m.config,'model_type','?')}} is_moe={{is_moe}} targets={{targets}}; building LoRA…", flush=True)
 lora=LoraConfig(r=16, lora_alpha=32, lora_dropout=0.05, task_type="CAUSAL_LM", target_modules=targets)  # MoE: 'gate'=router
-m=get_peft_model(m, lora)
+# RESUME/CONTINUE: if a prior adapter for this model exists on the worker, WARM-START from it and keep training the
+# SAME adapter; otherwise start a fresh one. This is what makes reruns "continue our training" instead of restarting.
+resumed=False
+if RESUME and os.path.exists(os.path.join(ADAPTER_DIR, "adapter_config.json")):
+    m=PeftModel.from_pretrained(m, ADAPTER_DIR, is_trainable=True); resumed=True
+    print(f"[qwen-lora] RESUME — continuing prior adapter at {{ADAPTER_DIR}}", flush=True)
+else:
+    m=get_peft_model(m, lora)
+    print(f"[qwen-lora] FRESH adapter (none at {{ADAPTER_DIR}})", flush=True)
 m.gradient_checkpointing_enable(); m.enable_input_require_grads()   # AFTER peft (correct order)
 has_router=any(".mlp.gate.lora_" in n for n,_ in m.named_parameters())     # MoE only: did LoRA reach the router?
 ntr=sum(p.numel() for p in m.parameters() if p.requires_grad)
-print(f"[qwen-lora] trainable params {{ntr}} | router adapted: {{has_router}}", flush=True)
+print(f"[qwen-lora] trainable params {{ntr}} | router adapted: {{has_router}} | resumed: {{resumed}}", flush=True)
 opt=torch.optim.AdamW([p for p in m.parameters() if p.requires_grad], lr=5e-5)
 def batch(r):
     pr=tok(r["prompt"], return_tensors="pt", truncation=True, max_length=256).input_ids
@@ -1497,7 +1505,9 @@ for ep in range(EPOCHS):
         if getattr(out,"aux_loss",None) is not None: auxs.append(float(out.aux_loss))
         opt.zero_grad(); out.loss.backward(); opt.step(); tl+=out.loss.item(); torch.cuda.empty_cache()
     print(f"[qwen-lora] epoch {{ep+1}} loss {{tl/max(1,len(train)):.4f}} aux {{(sum(auxs)/max(1,len(auxs))) if auxs else 0:.5f}}", flush=True)
-m.eval()
+os.makedirs(ADAPTER_DIR, exist_ok=True); m.save_pretrained(ADAPTER_DIR)   # PERSIST → next run resumes & continues
+print(f"[qwen-lora] SAVED adapter -> {{ADAPTER_DIR}} (rerun with resume=true to CONTINUE from here)", flush=True)
+m.eval()  # noqa: set inference mode
 with torch.no_grad():
     la=sum(m(input_ids=batch(r)[0], attention_mask=batch(r)[1], labels=batch(r)[2]).loss.item() for r in held)/max(1,len(held))
     with m.disable_adapter():
@@ -1520,20 +1530,32 @@ def pipe_qwen_moe_lora(run: Run) -> dict:
         return {"verdict": f"only {len(pairs)} pairs — enrich the vault first"}
     rows = [{"prompt": p["prompt"].rstrip() + "\n", "completion": " " + p["chosen"].strip(),
              "split": ("holdout" if i % 4 == 0 else "train")} for i, p in enumerate(pairs)]
+    # CONTINUE/RESUME: a stable adapter dir on the worker's persistent /workspace, keyed by model + adapter name — so a
+    # rerun WARM-STARTS from the last checkpoint and keeps training the SAME adapter instead of a fresh one each time.
+    import re as _re2
+    _slug = _re2.sub(r"[^a-z0-9]+", "-", os.path.basename(model).lower()).strip("-") or "qwen"
+    _name = _re2.sub(r"[^a-z0-9]+", "-", str(run.params.get("adapter_name", "default")).lower()).strip("-") or "default"
+    adapter_dir = f"/workspace/bobby_adapters/{_slug}/{_name}"
+    resume = str(run.params.get("resume", True)).lower() not in ("0", "false", "no", "")
     files = {"sft.jsonl": "\n".join(_json.dumps(r) for r in rows),
-             "qwen_lora.py": _QWEN_MOE_LORA_TEMPLATE.format(model=model, epochs=int(run.params.get("epochs", 3)))}
+             "qwen_lora.py": _QWEN_MOE_LORA_TEMPLATE.format(model=model, epochs=int(run.params.get("epochs", 3)),
+                                                            adapter_dir=adapter_dir, resume=("True" if resume else "False"))}
     out, res = _run_on_worker(run, "qwenlora", files, "qwen_lora.py", "qwen_lora_result",
                               max_wait=int(run.params.get("max_wait", 1500)))
     if out is None:
         return res
+    resumed = "RESUME — continuing" in (out or "")
+    is_moe = "moe" in os.path.basename(model).lower() or "30b" in model.lower()
     if res.get("passed"):
         _vault_enrich(run, "experience", "qwen-moe-lora-run",
-                      f"_LoRA fine-tuned Qwen3-MoE (router + experts + attn, aux-loss on) on {len(rows)} vault targets; "
-                      f"held-out adapter beat base AND the router was adapted (not the all-linear no-op)._",
+                      f"_LoRA {'CONTINUED (warm-started from the prior adapter)' if resumed else 'fine-tuned'} on "
+                      f"{len(rows)} vault targets; held-out adapter beat base"
+                      f"{' AND the router was adapted (not the all-linear no-op)' if is_moe else ' (dense; no router)'}. "
+                      f"Adapter persisted at `{adapter_dir}` on the worker — rerun with resume to CONTINUE._",
                       links=["qwen/qwen-moe-training", "qwen/qwen-optimization"], tags=["train", "qwen", "moe", "lora"])
-    is_moe = "moe" in os.path.basename(model).lower() or "30b" in model.lower()
-    return {"targets": len(rows), "moe": is_moe, **res,
-            "verdict": ((f"QWEN LoRA TRAINED — held-out adapter beat base" + (" + router adapted" if is_moe else " (dense; no router)"))
+    return {"targets": len(rows), "moe": is_moe, "adapter_dir": adapter_dir, "resume": resume, "resumed": resumed, **res,
+            "verdict": ((("QWEN LoRA CONTINUED" if resumed else "QWEN LoRA TRAINED") + " — held-out adapter beat base"
+                         + (" + router adapted" if is_moe else " (dense; no router)"))
                         if res.get("passed") else "qwen LoRA ran, see logs (held-out delta / router)")}
 
 
@@ -2050,7 +2072,127 @@ def pipe_world(run: Run) -> dict:
     return {"rounds": rounds, "agents": len(agents), "verdict": f"world sim — {theme[:50]}"}
 
 
+_PRIMLIB = None
+
+
+def _get_primitive_lib():
+    """The persistent, category-organized primitive library (seeded once, behind the cross-domain gate)."""
+    global _PRIMLIB
+    if _PRIMLIB is not None:
+        return _PRIMLIB
+    from bobby_squad import primitive_lib as L, burn_in as B
+    from bobby_squad.retrieval import default_embed
+    lib = L.PrimitiveLibrary(os.path.join(ROOT, "knowledge", "primitive_lib"), embed_fn=default_embed)
+    if not lib.names():                                     # first boot → seed the known primitives (proven cross-domain)
+        def ex(fid, n, s):
+            build = next(f for f in B.FAMILIES if f[0] == fid)[3]
+            return [build(B._rng(s * 100 + i)) for i in range(n)]
+        pats = {"fin": r"TXN-\d{6}", "health": r"[A-Z]\d{2}\.\d", "security": r"CVE-20\d{2}-\d{4}",
+                "legal": r"§\d{3}", "telecom": r"(?:[0-9A-F]{2}:){5}[0-9A-F]{2}", "aviation": r"[A-Z]{2}\d{3,4}"}
+        doms = {"extract_matching": {n: {"param": p, "examples": ex(n, 5, i + 1)}
+                                     for i, (n, p) in enumerate(pats.items())},
+                "reduce_integers": {"sum": {"param": "sum", "examples": ex("math_sum", 5, 7)},
+                                    "max": {"param": "max", "examples": ex("math_max", 5, 8)}},
+                "transform_code": {"snake2camel": {"param": "snake2camel", "examples": ex("code_camel", 5, 9)},
+                                   "single2double": {"param": "single2double", "examples": ex("code_quotes", 5, 10)}}}
+        try:
+            L.seed_known(lib, doms)
+        except Exception:
+            pass
+    _PRIMLIB = lib
+    return lib
+
+
+def primitive_registry() -> dict:
+    """The library as the UI needs it: a category tree + full per-primitive metadata (signature, passed domains, scores)."""
+    lib = _get_primitive_lib()
+    reg = lib.registry()
+    tree = {}
+    for name, meta in reg.items():
+        tree.setdefault(meta.get("category", "misc"), []).append(name)
+    return {"tree": {k: sorted(v) for k, v in sorted(tree.items())}, "primitives": reg, "names": lib.names()}
+
+
+def primitive_recall(q: str, k: int = 5) -> dict:
+    """Find a primitive BACK by task description — the semantic memory recall the flywheel uses before re-distilling."""
+    lib = _get_primitive_lib()
+    hits = lib.recall(q, k=k)
+    return {"query": q, "hits": [{"name": n, "score": s, **lib.registry().get(n, {})} for n, s in hits]}
+
+
+def pipe_acr_burn_in(run: Run) -> dict:
+    """The ACR flywheel benchmark, live in the Studio. Runs the 100-Ticket Burn-In past the real engine: the flywheel
+    distills the LLM's repeated work into frozen local plugins and the per-ticket serving cost bends down. Streams the
+    golden signals as it goes, and runs the No-ACR control for the negative comparison. No prompt — a deterministic
+    dataset + the engine's own distillation/routing."""
+    from bobby_squad import burn_in as B
+    from bobby_squad.llm import LLM
+    from bobby_squad.retrieval import default_embed
+
+    mode = str(run.params.get("mode", "single")).lower()
+    seed = int(run.params.get("seed", 1))
+    do_control = bool(run.params.get("control", True))
+    tickets = (B.generate_mixed(seed=seed, per=int(run.params.get("per", 12))) if mode.startswith("mix")
+               else B.generate(seed=seed))
+    llm = LLM(temperature=0.0, extra_body={"chat_template_kwargs": {"enable_thinking": False}})
+    label = "cross-modal" if mode.startswith("mix") else "single-sector"
+    run.emit("log", line=f"ACR Burn-In ({label}): {len(tickets)} tickets · model {llm.model}")
+
+    def on_ticket(row, st):
+        if not run.gate():
+            raise RuntimeError("stopped")
+        if st["i"] % 10 == 0 or st["i"] == st["n"] - 1:
+            run.emit("burn", phase="acr", i=st["i"] + 1, n=st["n"], local=st["local_fraction"],
+                     serve=st["serve_tokens"], distill=st["distill_tokens"], promotions=st["promotions"], acc=st["acc"])
+            run.emit("log", line=f"[{st['i']+1}/{st['n']}] local {st['local_fraction']*100:.0f}% · "
+                                 f"{st['serve_tokens']} serve tok · {st['promotions']} frozen plugins")
+
+    try:
+        acr = B.run(tickets, llm, default_embed, distill=True, warmup=int(run.params.get("warmup", 4)),
+                    on_ticket=on_ticket)
+    except RuntimeError:
+        return {"verdict": "stopped by operator"}
+    a = acr.summary()
+    run.emit("log", line=f"ACR done — {a['total_tokens']} tok ({a['serve_tokens']} serve + {a['distill_tokens']} "
+                         f"distill) · local {a['local_fraction']*100:.0f}% · acc {a['accuracy']*100:.0f}%")
+
+    csum = None
+    if do_control:
+        run.emit("log", line="No-ACR control (distillation OFF) — every ticket to the LLM…")
+
+        def on_ticket_c(row, st):
+            if not run.gate():
+                raise RuntimeError("stopped")
+            if st["i"] % 20 == 0:
+                run.emit("burn", phase="control", i=st["i"] + 1, n=st["n"], serve=st["serve_tokens"])
+        try:
+            ctrl = B.run(tickets, llm, default_embed, distill=False, on_ticket=on_ticket_c)
+            csum = ctrl.summary()
+        except RuntimeError:
+            csum = None
+
+    if csum:
+        fewer = 100 * (1 - a["total_tokens"] / max(1, csum["total_tokens"]))
+        run.emit("verdict",
+                 verdict="WIRE" if (a["total_tokens"] < csum["total_tokens"] and a["accuracy"] >= csum["accuracy"])
+                 else "MARGINAL", metric=f"{fewer:.0f}% fewer tokens",
+                 detail=f"ACR {a['total_tokens']} tok / acc {a['accuracy']*100:.0f}% vs "
+                        f"No-ACR {csum['total_tokens']} tok / acc {csum['accuracy']*100:.0f}%")
+    run.emit("result", use_case="acr_burn_in", records=len(tickets), passes=a["promotions"],
+             summary=f"ACR distilled {a['promotions']} frozen plugins · local {a['local_fraction']*100:.0f}% · "
+                     f"{a['total_tokens']} tok" + (f" · {100*(1-a['total_tokens']/max(1,csum['total_tokens'])):.0f}% "
+                     f"fewer than No-ACR" if csum else ""))
+    return {"tickets": len(tickets), "promotions": a["promotions"], "local_fraction": a["local_fraction"],
+            "acr_tokens": a["total_tokens"], "control_tokens": (csum or {}).get("total_tokens"),
+            "verdict": f"ACR burn-in: local {a['local_fraction']*100:.0f}%, {a['promotions']} plugins distilled"}
+
+
 NATIVE: Dict[str, dict] = {
+    "acr_burn_in": {"fn": pipe_acr_burn_in, "title": "ACR Burn-In benchmark", "kind": "native",
+                    "desc": "Run the 100-Ticket Burn-In past the engine LIVE: the ACR flywheel distills the LLM's "
+                            "repeated work into frozen local plugins and the per-ticket cost bends down — measured "
+                            "against a No-ACR negative control.",
+                    "params": {"mode": "single", "per": 12, "warmup": 4, "control": True, "seed": 1}},
     "goal": {"fn": pipe_goal, "title": "Goal-driven squad", "kind": "native",
              "desc": "State a goal → the squad decomposes it into acceptance-criteria + a living board, works it, and converges or escalates.",
              "params": {"goal": "", "data": "", "source": ""}},
@@ -2104,10 +2246,11 @@ NATIVE: Dict[str, dict] = {
                     "params": {"model": "/models/gemma3-1b-ablit", "epochs": 10, "k": 16}},
     "qwen_moe_lora": {"fn": (lambda run: pipe_qwen_moe_lora(run)), "title": "LoRA fine-tune Qwen3-MoE (router + aux-loss)",
                       "kind": "native",
-                      "desc": "Real MoE training: LoRA on the downloaded bf16 Qwen3-30B-A3B — attn + experts + ROUTER, "
-                              "aux load-balance loss on, completion-masked. Challenge: held-out adapter beats base AND "
-                              "the router was adapted (not the all-linear no-op). Stop the leader first (needs ~61GB).",
-                      "params": {"model": "/models/qwen3-30b-a3b-instruct", "epochs": 3}},
+                      "desc": "Real training: LoRA on a bf16 Qwen3 — MoE (attn + experts + ROUTER, aux load-balance loss) "
+                              "or DENSE (attn + MLP, auto-detected), completion-masked. RESUMES a prior adapter to "
+                              "CONTINUE training when one exists. Challenge: held-out adapter beats base (+ router adapted "
+                              "for MoE). Point `model` at a dense path to continue a dense run; stop the leader for the 30B.",
+                      "params": {"model": "/models/qwen3-30b-a3b-instruct", "epochs": 3, "resume": True, "adapter_name": "default"}},
     "value_head": {"fn": pipe_value_head, "title": "Train the value head (learned critic)", "kind": "native",
                    "desc": "A learned critic scored from the self-DPO chosen>rejected pairs — replaces the LLM "
                            "self-critique with a cheap deterministic quality head. Challenge = held-out ranking acc.",
@@ -2138,16 +2281,16 @@ NATIVE: Dict[str, dict] = {
 }
 
 
-def _make_script_pipeline(name: str) -> Callable[[Run], dict]:
-    """Run an example as a live subprocess, streaming its stdout as `log` events. Params become UPPERCASE env vars
-    the example already reads (e.g. AGENTS, DAYS, EPISODES, HORIZON_APPS)."""
+def _make_script_pipeline(name: str, path: str) -> Callable[[Run], dict]:
+    """Run an example/proof as a live subprocess, streaming its stdout as `log` events. Params become UPPERCASE env
+    vars the script already reads (e.g. AGENTS, DAYS, EPISODES, BURN_SEED). `path` is the script's absolute path."""
     def _run(run: Run) -> dict:
         env = dict(os.environ)
         env.setdefault("GA_EXTRA_BODY", '{"chat_template_kwargs":{"enable_thinking":false}}')
         for k, v in (run.params or {}).items():
             env[str(k).upper()] = str(v)
-        run.emit("log", line=f"$ python examples/{name}.py")
-        proc = subprocess.Popen([sys.executable, "-u", os.path.join(EXAMPLES, f"{name}.py")], cwd=PKG, env=env,
+        run.emit("log", line=f"$ python {os.path.relpath(path, PKG)}")
+        proc = subprocess.Popen([sys.executable, "-u", path], cwd=PKG, env=env,
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
         run.proc = proc
         for raw in iter(proc.stdout.readline, ""):
@@ -2171,20 +2314,29 @@ def _make_script_pipeline(name: str) -> Callable[[Run], dict]:
 import specs   # noqa: E402  — declarative use-case pipelines (add a DataSpec, get a pipeline)
 
 
+_SCRIPT_DIRS = [EXAMPLES, os.path.join(PKG, "wiki", "proofs")]     # curated demos + the runnable proof/capability suite
+
+
 def _discover(reserved) -> Dict[str, dict]:
-    """Auto-register every runnable example as a script pipeline — the full framework capability surface."""
+    """Auto-register every runnable example/proof as a script pipeline — the full framework capability surface.
+    Skips unit tests (`test_*`), private helpers (`_*`), the burn-in runners (the native `acr_burn_in` covers them),
+    and any name already taken by a native/spec pipeline."""
     meta: Dict[str, dict] = {}
-    for path in sorted(glob.glob(os.path.join(EXAMPLES, "*.py"))):
-        name = os.path.basename(path)[:-3]
-        if name.startswith("_") or name in reserved:
-            continue
-        desc = ""
-        try:
-            desc = (ast.get_docstring(ast.parse(open(path).read())) or "").strip().split("\n")[0]
-        except Exception:
-            pass
-        meta[name] = {"fn": _make_script_pipeline(name), "title": name.replace("_", " ").title(),
-                      "kind": "script", "desc": desc[:160], "params": {}}
+    seen: set = set()
+    for d in _SCRIPT_DIRS:
+        for path in sorted(glob.glob(os.path.join(d, "*.py"))):
+            name = os.path.basename(path)[:-3]
+            if (name.startswith(("_", "test_")) or name.startswith("run_burn_in")
+                    or name in reserved or name in seen):
+                continue
+            seen.add(name)
+            desc = ""
+            try:
+                desc = (ast.get_docstring(ast.parse(open(path).read())) or "").strip().split("\n")[0]
+            except Exception:
+                pass
+            meta[name] = {"fn": _make_script_pipeline(name, path), "title": name.replace("_", " ").title(),
+                          "kind": "script", "desc": desc[:160], "params": {}}
     return meta
 
 

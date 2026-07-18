@@ -1,17 +1,3 @@
-"""arbitrary_requests — a GENERALITY test: throw wildly different, unbounded requests at the squad and check it can
-behave ANY way the request asks, from ONE unchanged engine. No per-task prompt, no persona, no scripted pipeline —
-only the request changes; the swarm self-selects how to handle it.
-
-The requests deliberately span domains, formats, stances and audiences (explain / create / argue-against / design /
-teach-a-child / compare) — none of them are about this repo — so a pass proves the generative engine isn't overfit
-to the tasks we built (idea-farming / coverage / dev), it does what it's told.
-
-Per request: a small self-organizing pair (shared identity = "do EXACTLY what the request asks"), the 2nd sees the
-1st's answer, each self-selects its move. We capture the moves it chose + a cheap relevance signal + the output, so
-you can see it behaved the requested way. Run:
-  GA_LLM_URL="http://localhost:8002/v1/chat/completions" GA_EXTRA_BODY='{"chat_template_kwargs":{"enable_thinking":false}}' \
-  python3 examples/arbitrary_requests.py
-"""
 import os
 import sys
 

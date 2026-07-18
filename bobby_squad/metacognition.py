@@ -1,15 +1,3 @@
-"""metacognition — behavioral self-review for a squad.
-
-The point: give the agents a TOOL to review how ONE OF THEM actually behaved, and detect — on their own — that
-peer's intelligence BIAS and FRONTIER. Not a code-test runner and not a static prompt: a `BehaviorTrace` records an
-agent's real behavior off the observer stream, deterministic SIGNALS turn that trace into grounded evidence
-(move-entropy / area-concentration / repetition → bias; novelty-collapse / abstention → frontier), and `MetaTools`
-exposes a peer's evidence so a reviewing agent NAMES the bias/frontier itself. The detection is the agent's; the
-evidence is real — a self-model loop over behavior, the thing a single one-pass call can never do to itself.
-
-Bias  = where an agent's attention is over-concentrated or self-repeating (it keeps doing/seeing the same thing).
-Frontier = where its intelligence stops ADDING — novelty collapses to zero, it abstains, it plateaus.
-"""
 import json
 import math
 

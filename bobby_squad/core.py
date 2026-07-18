@@ -1,14 +1,3 @@
-"""bobby_squad.core — the proven persistent-self mechanism, domain-free.
-
-The one idea (see FINDINGS.md): split everything that enters an agent's context into two tiers and never let
-compaction touch tier A.
-
-  TIER A — SELF-CORE + PROGRESS   (pinned, always injected, immune to compaction)
-  TIER B — WORKING MEMORY         (scrolling window, wiped on compaction)
-
-Plus a self-model loop (re-ground), a convergence gate (stop when solved), and progress-dedup (don't repeat).
-Nothing here is speculative — every piece reproduces a measured result.
-"""
 from dataclasses import dataclass, field
 from typing import Callable, List, Optional, Tuple
 

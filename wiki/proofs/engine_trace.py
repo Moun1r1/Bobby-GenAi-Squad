@@ -1,11 +1,3 @@
-"""engine_trace — instrument every LAYER of the generative engine and emit real per-layer counts.
-
-Runs a small self-organizing squad on the repo and counts what actually fires at each layer of the self-directed
-loop: targets self-selected, plans generated, MOVES chosen (by type — the move-space), tool calls (grounding),
-records into the pinned tier, and abstentions. These are the numbers behind the layer-by-layer engine page.
-
-Run: GA_LLM_URL=... python3 examples/engine_trace.py
-"""
 import json
 import os
 import sys

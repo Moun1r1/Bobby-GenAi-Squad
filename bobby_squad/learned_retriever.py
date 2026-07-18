@@ -1,10 +1,3 @@
-"""bobby_squad.learned_retriever — a TORCH-FREE reload of the trained RetrievalEncoder.
-
-The encoder trains on the GPU worker (torch), exports its weights (`retrieval_weights.npz`), and this runs the
-forward pass in pure numpy — so the backend REUSES the learned recall in EVERY pipeline (no torch, no round-trip).
-That is the point of the encoder bank: train once, then simplify the running system by replacing a heuristic
-(cosine) with the learned scorer everywhere.
-"""
 import os
 from typing import Optional
 

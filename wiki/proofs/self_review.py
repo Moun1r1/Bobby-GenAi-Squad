@@ -1,23 +1,3 @@
-"""behavioral_review_squad — a squad that FINDS ideas itself, then REVIEWS how one of its own members behaved and
-detects — on its own — that member's intelligence BIAS and FRONTIER.
-
-This is the behavioral-tool loop the squad was missing. It is NOT a code-test runner and NOT a static prompt:
-
-  Phase 1 · WORK (generative, self-organizing) — N general researchers (one shared identity, no roles, no scripted
-            per-move task) each run a few research_cycles on the real repo. Every agent wears a BehaviorTrace
-            observer that records its REAL behavior (targets, moves, novelty per cycle, abstentions) off the live
-            event stream. Nothing about the recording changes what they do.
-
-  Phase 2 · SELF-REVIEW (metacognition) — round-robin, each agent reviews a PEER via the `review_peer` behavioral
-            tool. The tool returns deterministic SIGNALS (move-entropy, area-concentration, repetition, novelty
-            curve, where novelty collapsed, abstentions) + grounded flags. The reviewing agent NAMES the peer's
-            dominant bias and its frontier IN ITS OWN WORDS, but every claim must cite a real signal — the detection
-            is the agent's, the evidence is real. A self-model loop over behavior a one-pass call can't do to itself.
-
-Run:  GA_LLM_URL="http://localhost:8002/v1/chat/completions" \
-      GA_EXTRA_BODY='{"chat_template_kwargs":{"enable_thinking":false}}' \
-      RD_AGENTS=3 python3 examples/behavioral_review_squad.py
-"""
 import os
 import sys
 import time

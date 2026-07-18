@@ -1,13 +1,4 @@
 #!/usr/bin/env python3
-"""SELF-ORGANIZING SQUAD that READS THE REAL PDFs — more content, more rounds.
-
-No static assignment. The agents form a squad, each CLAIMS an unclaimed paper, OPENS ITS ACTUAL arXiv PDF
-(downloaded + text-extracted on demand — they read the real full paper, not the abstract), and indexes it
-section by section over many rounds, self-pacing by density and tracking exactly which section it reached in
-each paper. When a paper is done it claims another. Personas evolve from what each agent actually reads.
-
-Reading real multi-page PDFs = far more, far harder content than the abstracts; hence more rounds.
-"""
 import json
 import os
 import re

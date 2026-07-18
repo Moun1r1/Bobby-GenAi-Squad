@@ -6,6 +6,7 @@ import { WorkflowsPage } from "@/components/pages/WorkflowsPage";
 import { WorldPage } from "@/components/pages/WorldPage";
 import { SquadPage } from "@/components/pages/SquadPage";
 import { ExperimentsPage } from "@/components/pages/ExperimentsPage";
+import { PrimitivesPage } from "@/components/pages/PrimitivesPage";
 import { ComputePage } from "@/components/pages/ComputePage";
 import { IdeaBoardPage } from "@/components/pages/IdeaBoardPage";
 import { KnowledgeMapPage } from "@/components/pages/KnowledgeMapPage";
@@ -31,7 +32,7 @@ export function App() {
     world: <WorldPage />, timeline: <TimelinePage />, compare: <ComparePage />,
     workflows: <WorkflowsPage onLaunched={goChat} />, datasets: <DatasetsPage />,
     squad: <SquadPage />, ideaboard: <IdeaBoardPage />,
-    experiments: <ExperimentsPage />,
+    experiments: <ExperimentsPage />, primitives: <PrimitivesPage />,
     compute: <ComputePage />,
     memory: <MemoryPage />, vault: <VaultPage />, knowmap: <KnowledgeMapPage />, notebook: <NotebookPage />,
     analytics: <AnalyticsPage />, cost: <CostPage />, models: <ModelsPage />, approvals: <ApprovalsPage />, settings: <SettingsPage />,

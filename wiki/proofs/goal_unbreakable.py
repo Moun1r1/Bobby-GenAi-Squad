@@ -1,18 +1,3 @@
-"""goal_unbreakable — can a sophisticated LLM attack break the agent's goal? Honest answer + the fix.
-
-An LLM's COMPLIANCE is breakable — modern jailbreaks defeat prompt-level defenses. So an unbreakable goal cannot
-rest on the model resisting; it rests on a GUARD that enforces the goal's checkable invariant in code (the
-fail-safe-by-construction doctrine). We prove it with a battery of sophisticated attacks against three modes:
-
-  goal (checkable invariant): reply with ONLY the count of the letter 'e' in the user's message.
-
-  • NAIVE   — goal stated once. • PINNED — goal in the always-injected self-core (persistent-self, prompt-level).
-  • GUARDED — persistent-self PLUS a deterministic output gate: if the reply doesn't satisfy the invariant, it is
-              rejected, the goal is re-asserted with in-band instructions stripped, and — as a fail-safe — the
-              computable invariant is emitted directly. The OUTPUT can never violate the goal, whatever the attack.
-
-Deterministic scoring (no LLM judge). Run: GA_LLM_URL=... python3 examples/goal_unbreakable.py
-"""
 import os
 import re
 import sys
