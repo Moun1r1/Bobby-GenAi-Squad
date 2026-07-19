@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  proofs:
+    name: deterministic proofs (no network)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install package (stdlib-only core)
+        run: python -m pip install -e .
+
+      - name: Import smoke test (no numpy/torch needed)
+        run: python -c "import bobby_squad; print('bobby_squad', bobby_squad.__version__)"
+
+      - name: Run deterministic proofs
+        run: |
+          set -e
+          python -m pip install numpy          # the Sheaf-ADMM consensus proof needs numpy (optional extra)
+          python wiki/proofs/test_sheaf_consensus.py
+          python wiki/proofs/test_soma_flywheel.py
+
+  lint:
+    name: ruff
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Ruff (non-blocking)
+        continue-on-error: true
+        run: |
+          python -m pip install ruff
+          ruff check bobby_squad || true
