@@ -51,7 +51,7 @@ Live benchmarks (require a served model + embeddings) are under `wiki/proofs/run
 ## Code style
 
 - Python: match the surrounding code — dense, comment-the-why, no gratuitous abstraction. `ruff` clean.
-- Keep `torch` optional (guarded imports) so `import bobby_squad` works without it.
+- Keep `torch` and `numpy` optional (guarded imports) so `import bobby_squad` works without them.
 - No secrets, ever. No exception text or stack traces returned to clients.
 
 ## Reporting bugs / requesting features
