@@ -1,0 +1,22 @@
+name: Release drafter
+
+# Keeps a draft release up to date from merged PRs (categorized by label), so
+# cutting a release is one click. Config: .github/release-drafter.yml
+
+on:
+  push:
+    branches: [main]   # release-drafter reads its config from the DEFAULT branch, so run only after merge to main
+
+permissions:
+  contents: read
+
+jobs:
+  update_release_draft:
+    permissions:
+      contents: write
+      pull-requests: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: release-drafter/release-drafter@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

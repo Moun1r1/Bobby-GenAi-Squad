@@ -1,0 +1,29 @@
+name-template: "v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
+categories:
+  - title: "🚀 Features"
+    labels: ["enhancement", "feat"]
+  - title: "🐛 Fixes"
+    labels: ["bug", "fix"]
+  - title: "🔒 Security"
+    labels: ["security"]
+  - title: "🧰 Dependencies"
+    labels: ["dependencies"]
+  - title: "📝 Docs"
+    labels: ["documentation", "docs"]
+  - title: "🏗️ CI / Chore"
+    labels: ["ci", "chore"]
+change-template: "- $TITLE (#$NUMBER) @$AUTHOR"
+version-resolver:
+  major:
+    labels: ["major", "breaking"]
+  minor:
+    labels: ["enhancement", "feat", "minor"]
+  patch:
+    labels: ["bug", "fix", "security", "dependencies", "docs", "chore", "ci"]
+  default: patch
+template: |
+  ## Changes
+  $CHANGES
+exclude-labels:
+  - "skip-changelog"

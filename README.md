@@ -53,8 +53,8 @@ h^\star=\arg\max_{h\in\mathcal H_F} s(h),\quad
 s(h)=\frac1m\sum_{j=1}^m \mathrm{F1}\!\big(h(x_j),y_j\big).
 $$
 
-$\mathcal H_F$ is a typed hypothesis space per modality: LLM-proposed regexes; numeric reducers $\{\text{sum, max,
-min, count, product}\}$; code transforms; or an **LLM-authored** function $\texttt{def solve(x)}$ that is
+$\mathcal H_F$ is a typed hypothesis space per modality: LLM-proposed regexes;
+numeric reducers $\{\text{sum, max, min, count, product}\}$; code transforms; or an **LLM-authored** function $\texttt{def solve(x)}$ that is
 sandbox-compiled (restricted builtins) before scoring. $\tau=0.9$. A frozen $h^\star$ is deterministic and costs
 $\approx 0$ per call. Applying $\mathcal D$ across the stream is a fixed-point iteration: classes migrate from the model
 into the plugin set $\Pi$ until only the irreducible classes remain on the model.
