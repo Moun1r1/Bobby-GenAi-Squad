@@ -189,12 +189,59 @@ for t in test_burn_in test_all_layers test_algo_distill test_primitives test_pri
 Design and code map: [docs/DESIGN.md](docs/DESIGN.md) · benchmark detail: [docs/BENCHMARK.md](docs/BENCHMARK.md) ·
 primitives: [docs/PRIMITIVES.md](docs/PRIMITIVES.md).
 
+## 7. Extensions (measured)
+
+Two capabilities added on top of the core, each proof-gated and measured against a control on the same local
+Qwen3.6-35B-A3B. Detail + repro: [docs/EXTENSIONS.md](docs/EXTENSIONS.md).
+
+### 7.1 Disagreement-gated consensus (Sheaf-ADMM harvest)
+
+The default squad harvest is a set union ([squad.py](bobby_squad/squad.py)): every item any agent proposes is kept,
+so a single noisy agent's hallucination survives. `sheaf_consensus` ([bobby_squad/sheaf_consensus.py](bobby_squad/sheaf_consensus.py))
+ports the ADMM coordination core of *Learning Multi-Agent Coordination via Sheaf-ADMM* (Seely, Cupiał, Jones — ICML
+2026, arXiv:2605.31005) to the discrete extraction setting: agents = nodes, the shared "edge space" is the semantic
+embedding space (the sheaf restriction map), and consensus keeps a fact only when the squad corroborates it. It is
+**conditional by construction** — it auto-detects the regime and falls back to plain union when agents *partition* the
+work (disjoint coverage, as in `confirm_coordination`), so it is a safe drop-in default (`make_consensus_harvest`).
+
+Measured (3-agent fact extraction, F1 vs the union harvest), at ~0 extra LLM calls:
+
+| injected agent noise | union F1 | consensus F1 |
+|---|---|---|
+| none | 0.99 | 1.00 (+1 %) |
+| light | 0.85 | 1.00 (+18 %) |
+| medium | 0.80 | 0.98 (+23 %) |
+| heavy | 0.68 | 0.97 (**+42 %**) |
+
+Parity on clean/disjoint work; the gain grows with agent unreliability (mixed/weak models, high temp, adversarial
+input). 13 deterministic checks: [wiki/proofs/test_sheaf_consensus.py](wiki/proofs/test_sheaf_consensus.py).
+
+### 7.2 SOMA continuous-distillation flywheel
+
+Closes README §6.5 (persist skills across runs; distill → finetune). Two turns, both measured:
+
+* **Cheap turn — skill persistence.** `PluginStore` ([bobby_squad/soma_flywheel.py](bobby_squad/soma_flywheel.py))
+  snapshots proof-gated frozen plugins (handler recipe + `OODGate`) and rehydrates them into the next run
+  (`burn_in.run(preload=…)`), so run k+1 starts warm. Measured: run 2 spends **−51 % tokens at equal accuracy** and
+  serves more locally (80 % vs 72 %) because plugins fire from ticket 1 — zero re-distillation.
+* **Compounding turn — distill → finetune.** `DistillationCorpus` emits verified `(prompt → output)` SFT records
+  (only plugin-served or graded-correct traces, so every label is trustworthy). A LoRA fine-tune of a `qwen3-4b`
+  base on that corpus, evaluated with a paired bootstrap CI, lifts held-out accuracy **71.8 % → 88.2 %
+  (Δ +16.5 %, 95 % CI [+12.2 %, +21.0 %], CI-separated; McNemar +79/−13)**, improving every task family
+  (image 0→100, math 47→71, algo 64→75, extract 85→91, code 95→100).
+
+An orchestrator arbitrates the single GPU end-to-end (readiness → offload the serving model → train → statistical
+gain-gate → merge → swap → serve → confirm), so the flywheel runs on one box without ever serving and training at
+once. 20 deterministic checks: [wiki/proofs/test_soma_flywheel.py](wiki/proofs/test_soma_flywheel.py).
+
 ## References
 
 **Multi-agent systems & self-organization.** B. Hayes-Roth, "A blackboard architecture for control," *Artificial
 Intelligence* 26(3), 1985. Stigmergy / self-organizing software (swarm coordination without a central controller).
 Open frameworks: [Mesa](https://github.com/projectmesa/mesa) (agent-based modeling),
 [CrewAI](https://github.com/crewAIInc/crewAI), [LangGraph](https://github.com/langchain-ai/langgraph).
+J. Seely, B. Cupiał, L. Jones, "Learning Multi-Agent Coordination via Sheaf-ADMM," ICML 2026, arXiv:2605.31005 —
+the consensus core ported in §7.1 ([SakanaAI/sheaf-admm](https://github.com/SakanaAI/sheaf-admm)).
 
 **Generative agents & memory.** J. S. Park et al., "Generative Agents: Interactive Simulacra of Human Behavior,"
 arXiv:2304.03442, 2023. N. Shinn et al., "Reflexion," arXiv:2303.11366, 2023.
