@@ -55,8 +55,8 @@ class DgxMonitor:
             else:
                 cmd, target = _ssh_cmd(self.host)
                 p = subprocess.run(cmd + [target, self._POLL], capture_output=True, text=True, timeout=15)
-        except Exception as e:
-            _log.warning("dgx poll failed: %s", e)          # log server-side; do NOT leak the trace to clients
+        except Exception:
+            _log.warning("dgx poll failed", exc_info=True)  # full trace server-side; do NOT leak it to clients
             return {"ok": False, "error": "dgx poll failed", "ts": time.time()}
         if p.returncode != 0:
             _log.warning("dgx poll returncode=%s stderr=%s", p.returncode, (p.stderr or "").strip()[:200])
