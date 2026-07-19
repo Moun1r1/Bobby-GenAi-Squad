@@ -16,7 +16,7 @@ export const appRouter = router({
     .query(({ input }) => api(`/runs/${input.id}`)),
 
   launch: publicProcedure
-    .input(z.object({ pipeline: z.string(), params: z.record(z.any()).default({}) }))
+    .input(z.object({ pipeline: z.string(), params: z.record(z.string(), z.any()).default({}) }))
     .mutation(({ input }) =>
       api("/runs", { method: "POST", body: JSON.stringify(input) })
     ),
