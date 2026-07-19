@@ -16,7 +16,7 @@ class Telemetry:
                 if not e.kind.endswith((".handled", ".unhandled")) and e.kind not in _CONTROL]
 
     def cost_curve(self) -> dict:
-        """The moat metric: what fraction of handled events was served LOCALLY (a frozen plugin, ~free) vs by the LLM
+        """The token-reduction metric: what fraction of handled events was served LOCALLY (a frozen plugin, ~free) vs by the LLM
         fallback (expensive). As plugins are promoted, `local_frac` rises → cost-per-event falls."""
         by = Counter(e.payload.get("by") for e in self._handled())
         n = sum(by.values()) or 1

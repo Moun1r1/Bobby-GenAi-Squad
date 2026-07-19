@@ -86,8 +86,8 @@ acr_tok = sum(acr.signals.series("token_cost"))
 ctrl_tok = sum(ctrl.signals.series("token_cost"))
 chk("No-ACR control never distills (0 promotions)", ctrl.promotions == 0)
 chk("No-ACR control routes 100% to the LLM", ctrl.signals.local_fraction() == 0.0)
-chk("MOAT: ACR spends strictly fewer tokens than the No-ACR control", acr_tok < ctrl_tok)
-chk("MOAT: token saving is large (>50%)", acr_tok < 0.5 * ctrl_tok)
+chk("TOKEN REDUCTION: ACR spends strictly fewer tokens than the No-ACR control", acr_tok < ctrl_tok)
+chk("TOKEN REDUCTION: token saving is large (>50%)", acr_tok < 0.5 * ctrl_tok)
 chk("accuracy parity: ACR >= control", acr.accuracy >= ctrl.accuracy)
 
 # 5) golden signals + report render without error
@@ -97,7 +97,7 @@ chk("golden_signals emits all 6 signal families",
                          "eval_compute_saved", "wall_clock_time_per_task", "accuracy"]))
 chk("working_context_size stays < 5000 tokens/step", g["working_context_size"]["max"] < 5000)
 rep = B.render_report(acr, ctrl)
-chk("render_report produces a non-empty ASCII report", isinstance(rep, str) and "MOAT" in rep)
+chk("render_report produces a non-empty ASCII report", isinstance(rep, str) and "TOKEN REDUCTION" in rep)
 
 # 6) dependency-free SVG plot + round-trip reload
 import tempfile
@@ -212,7 +212,7 @@ chk("IRREDUCIBLE prose NEVER distilled — stays on the LLM every time (the gene
     all(rt == "llm" for rt in by_kind_frozen["prose"]))
 chk("mixed accuracy holds high with a competent model", macr.accuracy >= 0.98)
 mctrl = B.run(mt, MixedLLM(), mixed_embed, distill=False)
-chk("cross-modal MOAT: ACR spends fewer tokens than No-ACR control",
+chk("cross-modal TOKEN REDUCTION: ACR spends fewer tokens than No-ACR control",
     sum(macr.signals.series("token_cost")) < sum(mctrl.signals.series("token_cost")))
 chk("cross-modal accuracy parity: ACR >= control", macr.accuracy >= mctrl.accuracy)
 

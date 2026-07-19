@@ -1,5 +1,7 @@
 # Bobby: cost-decaying LLM agents via proof-gated distillation to deterministic plugins
 
+**[Quickstart](#bobby-in-5-minutes) · [Results](RESULTS.md) · [Roadmap](ROADMAP.md) · [Extensions](docs/EXTENSIONS.md) · [Contributing](CONTRIBUTING.md)**
+
 *Reading guide: §2.2–2.4 are the core (the distillation gate, the competence router / OOD test, and the cost model);
 §2.5–2.8 are the agent, memory, and coordination layers; §3 is the benchmark and §4 reproduces every number. Code
 paths are named inline; runnable proofs are under `wiki/proofs/`.*
@@ -18,6 +20,28 @@ decentralized, no orchestrator, no assigned roles — coverage emerges from loca
 instantiated from data — a persona (identity + goal) it self-directs against, with a persistent self that survives
 context-compaction — and the knowledge it produces is written to a shared store, so it is reusable across agents and
 runs. All results are reproduced by scripts in `wiki/proofs/` and 106 deterministic checks.
+
+---
+
+## Bobby in 5 minutes
+
+No model, no GPU, no keys — reproduce the core result on your laptop (a deterministic mock stands in for the LLM):
+
+```bash
+pip install -e .
+python examples/demo_no_infra.py     # 100 tickets on a mock model → prints the −69% token reduction + OOD tripwire
+```
+
+Then point it at any OpenAI-compatible endpoint for the real numbers:
+
+```bash
+export BOBBY_LLM_URL=http://localhost:8000/v1/chat/completions BOBBY_LLM_MODEL=your-model
+python examples/quickstart.py        # a minimal agent + squad against a real model
+```
+
+Next: **[RESULTS.md](RESULTS.md)** (every number + its command) · **[docs/EXTENSIONS.md](docs/EXTENSIONS.md)** (the two
+measured extensions) · **[docs/DESIGN.md](docs/DESIGN.md)** (code map) · **[ROADMAP.md](ROADMAP.md)**. *The rest of
+this README is the paper.*
 
 ---
 

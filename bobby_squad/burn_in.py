@@ -608,7 +608,7 @@ class RunResult:
 
     def summary(self) -> dict:
         s = self.signals
-        serve = sum(s.series("token_cost"))                 # per-ticket serving cost (the moat curve)
+        serve = sum(s.series("token_cost"))                 # per-ticket serving cost (the token-reduction curve)
         return {"local_fraction": round(s.local_fraction(), 3), "llm_calls": self.llm_calls,
                 "promotions": self.promotions, "evals_saved": self.evals_saved,
                 "accuracy": round(self.accuracy, 3),
@@ -772,7 +772,7 @@ def render_report(acr: RunResult, control: Optional[RunResult] = None) -> str:
         drop = 100 * (1 - (a["total_tokens"] / c["total_tokens"])) if c["total_tokens"] else 0
         L.append("No-ACR   : tokens=%d  llm_calls=%d  promotions=%d  local=%.0f%%  acc=%.0f%%"
                  % (c["total_tokens"], c["llm_calls"], c["promotions"], c["local_fraction"] * 100, c["accuracy"] * 100))
-        L.append("MOAT     : ACR spends %.0f%% fewer tokens than No-ACR at %s accuracy"
+        L.append("TOKEN REDUCTION : ACR spends %.0f%% fewer tokens than No-ACR at %s accuracy"
                  % (drop, "equal-or-better" if a["accuracy"] >= c["accuracy"] else "LOWER (investigate)"))
     L.append("═" * 78)
     return "\n".join(L)
@@ -816,7 +816,7 @@ def plot_svg(acr: RunResult, control: Optional[RunResult], path: str) -> str:
     if control:
         cc = control.signals.series("token_cost")
         tok.append(("No-ACR", [round(sum(cc[:i + 1]) / (i + 1), 1) for i in range(len(cc))], "#e74c3c"))
-    charts.append(_svg_chart(mx, my, cw, ch, tok, "token_cost/task (running mean) — The Moat", vline=80))
+    charts.append(_svg_chart(mx, my, cw, ch, tok, "token_cost/task (running mean) — Token reduction", vline=80))
     charts.append(_svg_chart(mx + cw + gap, my, cw, ch,
                              [("local_frac", g["router_local_fraction"]["acr"], "#3498db")],
                              "router_local_fraction — Distillation", ymax=1.0, hline=0.85, vline=80))
@@ -868,13 +868,13 @@ def plot_png(acr: RunResult, control: Optional[RunResult], path: str, title: str
         if ood_at is not None and ood_at < len(xs):
             a.axvline(ood_at, color="#ff7f0e", ls="--", lw=1.2, alpha=0.8)
 
-    # 1 — token cost/task (the moat): ACR vs control running mean
+    # 1 — token cost/task (the token reduction): ACR vs control running mean
     ax[0, 0].plot(xs, g["token_cost_per_task"]["acr_running_mean"], color=ACR, lw=2.2, label="ACR flywheel")
     if control:
         cc = control.signals.series("token_cost")
         cum = [sum(cc[:i + 1]) / (i + 1) for i in range(len(cc))]
         ax[0, 0].plot(range(len(cum)), cum, color=CTRL, lw=2.0, ls="--", label="No-ACR control")
-    style(ax[0, 0], "token_cost / task  —  The Moat  (running mean)", "tokens / task")
+    style(ax[0, 0], "token_cost / task  —  Token reduction  (running mean)", "tokens / task")
     ax[0, 0].legend(loc="center right", framealpha=0.9)
 
     # 2 — router local fraction (distillation)
