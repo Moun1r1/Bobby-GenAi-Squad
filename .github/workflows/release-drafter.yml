@@ -5,9 +5,7 @@ name: Release drafter
 
 on:
   push:
-    branches: [main]
-  pull_request:
-    types: [opened, reopened, synchronize]
+    branches: [main]   # release-drafter reads its config from the DEFAULT branch, so run only after merge to main
 
 permissions:
   contents: read
