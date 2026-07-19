@@ -1,6 +1,5 @@
 from .core import SelfCore, PersistentContext, Agent, stream_observer
 from .squad import squad_solve
-from .sheaf_consensus import sheaf_consensus, make_consensus_harvest, ConsensusResult
 from .soma_flywheel import PluginStore, DistillationCorpus
 from .proving import confirm_gain, prove
 from .ledger import IdeaLedger
@@ -45,11 +44,18 @@ try:
 except ImportError:                                        # torch not installed → the training layers are unavailable
     _TORCH_LAYERS = []
 
+# numpy is OPTIONAL — only the Sheaf-ADMM consensus harvest needs it. Keep the core stdlib-only, so this is guarded.
+try:
+    from .sheaf_consensus import sheaf_consensus, make_consensus_harvest, ConsensusResult
+    _SHEAF = ["sheaf_consensus", "make_consensus_harvest", "ConsensusResult"]
+except ImportError:                                        # numpy not installed → consensus harvest unavailable
+    _SHEAF = []
+
 __all__ = ["SelfCore", "PersistentContext", "Agent", "LLM", "Society", "near_dup", "words",
            "LexicalRetriever", "EmbeddingRetriever", "embedding_available", "KnowledgeRoom", "HypothesisSearcher",
            "SemanticMemory", "CorrectionMemory", "FindingsMemory", "ReadOnlyTools", "SandboxTools", "DgxTools", "investigate",
-           "TOOL_SCHEMAS", "stream_observer", "squad_solve", "sheaf_consensus", "make_consensus_harvest",
-           "ConsensusResult", "PluginStore", "DistillationCorpus", "confirm_gain", "prove", "IdeaLedger",
+           "TOOL_SCHEMAS", "stream_observer", "squad_solve",
+           "PluginStore", "DistillationCorpus", "confirm_gain", "prove", "IdeaLedger",
            "JobRegistry", "AstDedup", "fingerprint",
            "Engine", "EventLog", "PluginRegistry", "Plugin", "Event", "plugin_router",
            "OODGate", "ood_plugin_router", "competence_router", "burn_in",
@@ -59,5 +65,5 @@ __all__ = ["SelfCore", "PersistentContext", "Agent", "LLM", "Society", "near_dup
            "WorldSense", "perceive", "signal", "WorldStreamSource", "FileChangeSource", "LedgerSource",
            "PeerSource", "ClockSource", "EmotionState", "SelfModelSource",
            "KnowledgeVault", "VaultHub", "Note", "slug", "link_id",
-           "LearnedRetriever", "load_retriever", "RunStats", "OpsWorld", "WORKFLOWS", "operate"] + _TORCH_LAYERS
+           "LearnedRetriever", "load_retriever", "RunStats", "OpsWorld", "WORKFLOWS", "operate"] + _TORCH_LAYERS + _SHEAF
 __version__ = "0.1.0"
