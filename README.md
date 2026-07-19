@@ -101,7 +101,7 @@ claimed when confidence intervals separate (§3).
 ### 2.5 Cross-domain primitives
 
 A *primitive* is a domain-free skeleton $g$ bound per domain by a parameter $\phi_D$ (e.g.
-$g=\texttt{extract\_matching}$, $\phi_D=$ a regex). It is promoted only if it clears the gate on at least $n$ domains it
+$g=$ `extract_matching`, $\phi_D=$ a regex). It is promoted only if it clears the gate on at least $n$ domains it
 was **not** co-fit on:
 
 $$
@@ -214,7 +214,7 @@ Measured (3-agent fact extraction, F1 vs the union harvest), at ~0 extra LLM cal
 | heavy | 0.68 | 0.97 (**+42 %**) |
 
 Parity on clean/disjoint work; the gain grows with agent unreliability (mixed/weak models, high temp, adversarial
-input). 13 deterministic checks: [wiki/proofs/test_sheaf_consensus.py](wiki/proofs/test_sheaf_consensus.py).
+input). 13 deterministic checks: [wiki/proofs/test_sheaf_consensus.py](https://github.com/Moun1r1/Bobby-Self-Organizing-Agent-Squad/blob/main/wiki/proofs/test_sheaf_consensus.py).
 
 ### 7.2 SOMA continuous-distillation flywheel
 
@@ -232,7 +232,7 @@ Closes README §6.5 (persist skills across runs; distill → finetune). Two turn
 
 An orchestrator arbitrates the single GPU end-to-end (readiness → offload the serving model → train → statistical
 gain-gate → merge → swap → serve → confirm), so the flywheel runs on one box without ever serving and training at
-once. 20 deterministic checks: [wiki/proofs/test_soma_flywheel.py](wiki/proofs/test_soma_flywheel.py).
+once. 20 deterministic checks: [wiki/proofs/test_soma_flywheel.py](https://github.com/Moun1r1/Bobby-Self-Organizing-Agent-Squad/blob/main/wiki/proofs/test_soma_flywheel.py).
 
 ## References
 
