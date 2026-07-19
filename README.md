@@ -101,7 +101,7 @@ claimed when confidence intervals separate (§3).
 ### 2.5 Cross-domain primitives
 
 A *primitive* is a domain-free skeleton $g$ bound per domain by a parameter $\phi_D$ (e.g.
-$g=$ `extract_matching`, $\phi_D=$ a regex). It is promoted only if it clears the gate on at least $n$ domains it
+$g$ = `extract_matching`, $\phi_D$ = a regex). It is promoted only if it clears the gate on at least $n$ domains it
 was **not** co-fit on:
 
 $$
