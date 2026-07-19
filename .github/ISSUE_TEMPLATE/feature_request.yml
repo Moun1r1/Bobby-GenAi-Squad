@@ -1,0 +1,31 @@
+name: Feature request
+description: Propose a capability or improvement
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: What are you trying to do that Bobby can't do well today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: The mechanism you have in mind. Keep it decoupled/event-sourced where possible.
+    validations:
+      required: true
+  - type: textarea
+    id: measurement
+    attributes:
+      label: How would the gain be proven?
+      description: |
+        Bobby only accepts claimed gains proven against a control with CI separation.
+        Which benchmark / control would demonstrate this, and what's the expected effect?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

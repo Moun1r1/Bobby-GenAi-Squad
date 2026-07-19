@@ -1,0 +1,15 @@
+# Code owners — requested for review automatically on matching paths.
+# Docs: https://docs.github.com/articles/about-code-owners
+
+# Default owner for everything
+*                       @Moun1r1
+
+# Core engine & runtime
+/bobby_squad/           @Moun1r1
+
+# Studio backend/frontend
+/studio/                @Moun1r1
+
+# CI, templates, security, and repo automation
+/.github/               @Moun1r1
+/SECURITY.md            @Moun1r1

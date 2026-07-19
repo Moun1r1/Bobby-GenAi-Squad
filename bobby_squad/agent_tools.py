@@ -446,7 +446,7 @@ class DgxTools(SandboxTools):
         cpus = os.environ.get("DGX_WORKER_CPUS", "12")
         frac = os.environ.get("DGX_GPU_FRACTION", "0.35")
         # mount foundation-model weights read-only so the worker can TRAIN real models (Gemma/Qwen/…) with no download.
-        models = os.environ.get("DGX_MODELS", "~/models")
+        models = os.environ.get("DGX_MODELS", os.path.expanduser("~/models"))
         mnt = f"-v {models}:/models:ro " if models else ""
         create = (f"docker rm -f {self.worker} 2>/dev/null; "
                   f"docker run -d --name {self.worker} --gpus all --restart unless-stopped "
