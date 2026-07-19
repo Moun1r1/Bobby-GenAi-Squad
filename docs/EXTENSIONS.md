@@ -9,7 +9,7 @@ proof still reproduces.
 ## 1. Disagreement-gated consensus — Sheaf-ADMM harvest
 
 **Module:** [`bobby_squad/sheaf_consensus.py`](../bobby_squad/sheaf_consensus.py) ·
-**Proof:** [`wiki/proofs/test_sheaf_consensus.py`](../wiki/proofs/test_sheaf_consensus.py) (13 deterministic checks)
+**Proof:** [`wiki/proofs/test_sheaf_consensus.py`](https://github.com/Moun1r1/Bobby-Self-Organizing-Agent-Squad/blob/main/wiki/proofs/test_sheaf_consensus.py) (13 deterministic checks)
 
 ### Problem
 `squad_solve`'s default harvest is a set union ([`squad.py`](../bobby_squad/squad.py) `_default_harvest`): every item
@@ -55,7 +55,7 @@ squad_solve(agents, units, work, harvest=make_consensus_harvest(embed=default_em
 ## 2. SOMA continuous-distillation flywheel
 
 **Module:** [`bobby_squad/soma_flywheel.py`](../bobby_squad/soma_flywheel.py) ·
-**Proof:** [`wiki/proofs/test_soma_flywheel.py`](../wiki/proofs/test_soma_flywheel.py) (20 deterministic checks)
+**Proof:** [`wiki/proofs/test_soma_flywheel.py`](https://github.com/Moun1r1/Bobby-Self-Organizing-Agent-Squad/blob/main/wiki/proofs/test_soma_flywheel.py) (20 deterministic checks)
 
 Closes the loop set out in README §6.5: persist skills across runs, and distill → finetune the base model so more of
 the workload becomes reducible over time.

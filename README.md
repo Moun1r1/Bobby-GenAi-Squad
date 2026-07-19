@@ -1,5 +1,7 @@
 # Bobby: cost-decaying LLM agents via proof-gated distillation to deterministic plugins
 
+**[Quickstart](#bobby-in-5-minutes) · [Results](RESULTS.md) · [Roadmap](ROADMAP.md) · [Extensions](docs/EXTENSIONS.md) · [Contributing](CONTRIBUTING.md)**
+
 *Reading guide: §2.2–2.4 are the core (the distillation gate, the competence router / OOD test, and the cost model);
 §2.5–2.8 are the agent, memory, and coordination layers; §3 is the benchmark and §4 reproduces every number. Code
 paths are named inline; runnable proofs are under `wiki/proofs/`.*
@@ -18,6 +20,28 @@ decentralized, no orchestrator, no assigned roles — coverage emerges from loca
 instantiated from data — a persona (identity + goal) it self-directs against, with a persistent self that survives
 context-compaction — and the knowledge it produces is written to a shared store, so it is reusable across agents and
 runs. All results are reproduced by scripts in `wiki/proofs/` and 106 deterministic checks.
+
+---
+
+## Bobby in 5 minutes
+
+No model, no GPU, no keys — reproduce the core result on your laptop (a deterministic mock stands in for the LLM):
+
+```bash
+pip install -e .
+python examples/demo_no_infra.py     # 100 tickets on a mock model → prints the −69% token reduction + OOD tripwire
+```
+
+Then point it at any OpenAI-compatible endpoint for the real numbers:
+
+```bash
+export BOBBY_LLM_URL=http://localhost:8000/v1/chat/completions BOBBY_LLM_MODEL=your-model
+python examples/quickstart.py        # a minimal agent + squad against a real model
+```
+
+Next: **[RESULTS.md](RESULTS.md)** (every number + its command) · **[docs/EXTENSIONS.md](docs/EXTENSIONS.md)** (the two
+measured extensions) · **[docs/DESIGN.md](docs/DESIGN.md)** (code map) · **[ROADMAP.md](ROADMAP.md)**. *The rest of
+this README is the paper.*
 
 ---
 
@@ -101,7 +125,7 @@ claimed when confidence intervals separate (§3).
 ### 2.5 Cross-domain primitives
 
 A *primitive* is a domain-free skeleton $g$ bound per domain by a parameter $\phi_D$ (e.g.
-$g=\texttt{extract\_matching}$, $\phi_D=$ a regex). It is promoted only if it clears the gate on at least $n$ domains it
+$g$ = `extract_matching`, $\phi_D$ = a regex). It is promoted only if it clears the gate on at least $n$ domains it
 was **not** co-fit on:
 
 $$
@@ -214,7 +238,7 @@ Measured (3-agent fact extraction, F1 vs the union harvest), at ~0 extra LLM cal
 | heavy | 0.68 | 0.97 (**+42 %**) |
 
 Parity on clean/disjoint work; the gain grows with agent unreliability (mixed/weak models, high temp, adversarial
-input). 13 deterministic checks: [wiki/proofs/test_sheaf_consensus.py](wiki/proofs/test_sheaf_consensus.py).
+input). 13 deterministic checks: [wiki/proofs/test_sheaf_consensus.py](https://github.com/Moun1r1/Bobby-Self-Organizing-Agent-Squad/blob/main/wiki/proofs/test_sheaf_consensus.py).
 
 ### 7.2 SOMA continuous-distillation flywheel
 
@@ -232,7 +256,7 @@ Closes README §6.5 (persist skills across runs; distill → finetune). Two turn
 
 An orchestrator arbitrates the single GPU end-to-end (readiness → offload the serving model → train → statistical
 gain-gate → merge → swap → serve → confirm), so the flywheel runs on one box without ever serving and training at
-once. 20 deterministic checks: [wiki/proofs/test_soma_flywheel.py](wiki/proofs/test_soma_flywheel.py).
+once. 20 deterministic checks: [wiki/proofs/test_soma_flywheel.py](https://github.com/Moun1r1/Bobby-Self-Organizing-Agent-Squad/blob/main/wiki/proofs/test_soma_flywheel.py).
 
 ## References
 

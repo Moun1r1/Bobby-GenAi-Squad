@@ -1,0 +1,8 @@
+# Optional deps for the SOMA fine-tune pipeline (NOT needed by the core bobby_squad package).
+# emit_corpus.py needs only the core package (+ numpy, an optional core extra).
+# train_lora.py / eval_stats.py / merge_adapter.py need a GPU + the ML stack below.
+torch>=2.1
+transformers>=4.44
+peft>=0.11
+numpy>=1.24
+# datasets is optional (only if you swap in a datasets-based loader; the scripts here read plain .jsonl)
