@@ -15,12 +15,15 @@ browser gets a typed live feed without us hand-rolling a socket protocol.
 """
 import asyncio
 import json
+import logging
 import os
 import queue
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+
+_log = logging.getLogger(__name__)
 
 from fastapi import FastAPI                          # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware   # noqa: E402
@@ -135,8 +138,9 @@ def create_spec(req: SpecReq):
         if not req.identity.strip() or not req.goal.strip():
             return {"ok": False, "error": "identity and goal are required"}
         return {"ok": True, "pipeline": runner.register_spec(req.dict())}
-    except Exception as e:
-        return {"ok": False, "error": str(e)}
+    except Exception:
+        _log.exception("register_spec failed")             # log the trace server-side, not to the client
+        return {"ok": False, "error": "failed to create pipeline"}
 
 
 @app.delete("/pipelines/{pid}")

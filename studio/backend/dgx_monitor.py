@@ -6,10 +6,13 @@ STORAGE (disk) · the running DOCKER sessions. An nvidia-smi *query* does NO GPU
 are cached on a short interval and served both as a snapshot and an SSE realtime stream. `is_safe()` is the pre-train
 gate — the resource management that stops a run from starving the shared DGX.
 """
+import logging
 import os
 import subprocess
 import threading
 import time
+
+_log = logging.getLogger(__name__)
 
 
 def _ssh_cmd(host: str):
@@ -53,9 +56,11 @@ class DgxMonitor:
                 cmd, target = _ssh_cmd(self.host)
                 p = subprocess.run(cmd + [target, self._POLL], capture_output=True, text=True, timeout=15)
         except Exception as e:
-            return {"ok": False, "error": str(e)[:140], "ts": time.time()}
+            _log.warning("dgx poll failed: %s", e)          # log server-side; do NOT leak the trace to clients
+            return {"ok": False, "error": "dgx poll failed", "ts": time.time()}
         if p.returncode != 0:
-            return {"ok": False, "error": (p.stderr or "ssh failed").strip()[:140], "ts": time.time()}
+            _log.warning("dgx poll returncode=%s stderr=%s", p.returncode, (p.stderr or "").strip()[:200])
+            return {"ok": False, "error": "dgx poll unavailable", "ts": time.time()}
         sec = {"gpu": "", "PROC": "", "CPU": "", "DISK": "", "DOCKER": ""}
         cur = "gpu"
         for line in p.stdout.splitlines():
