@@ -31,7 +31,6 @@ from .board_tools import BoardTools, BOARD_SCHEMAS
 from .worldsense import (WorldSense, perceive, signal, WorldStreamSource, FileChangeSource, LedgerSource,
                          PeerSource, ClockSource, EmotionState, SelfModelSource)
 from .vault import KnowledgeVault, VaultHub, Note, slug, link_id
-from .learned_retriever import LearnedRetriever, load_retriever
 from .observability import RunStats
 
 # torch is an OPTIONAL dependency — only the encoder bank / world-transformer layer need it (for training the
@@ -44,12 +43,14 @@ try:
 except ImportError:                                        # torch not installed → the training layers are unavailable
     _TORCH_LAYERS = []
 
-# numpy is OPTIONAL — only the Sheaf-ADMM consensus harvest needs it. Keep the core stdlib-only, so this is guarded.
+# numpy is OPTIONAL — only the Sheaf-ADMM consensus harvest and the learned retriever need it. Keep the core
+# stdlib-only (`import bobby_squad` must work without numpy), so these are guarded.
 try:
     from .sheaf_consensus import sheaf_consensus, make_consensus_harvest, ConsensusResult
-    _SHEAF = ["sheaf_consensus", "make_consensus_harvest", "ConsensusResult"]
-except ImportError:                                        # numpy not installed → consensus harvest unavailable
-    _SHEAF = []
+    from .learned_retriever import LearnedRetriever, load_retriever
+    _NUMPY = ["sheaf_consensus", "make_consensus_harvest", "ConsensusResult", "LearnedRetriever", "load_retriever"]
+except ImportError:                                        # numpy not installed → these features are unavailable
+    _NUMPY = []
 
 __all__ = ["SelfCore", "PersistentContext", "Agent", "LLM", "Society", "near_dup", "words",
            "LexicalRetriever", "EmbeddingRetriever", "embedding_available", "KnowledgeRoom", "HypothesisSearcher",
@@ -65,5 +66,5 @@ __all__ = ["SelfCore", "PersistentContext", "Agent", "LLM", "Society", "near_dup
            "WorldSense", "perceive", "signal", "WorldStreamSource", "FileChangeSource", "LedgerSource",
            "PeerSource", "ClockSource", "EmotionState", "SelfModelSource",
            "KnowledgeVault", "VaultHub", "Note", "slug", "link_id",
-           "LearnedRetriever", "load_retriever", "RunStats", "OpsWorld", "WORKFLOWS", "operate"] + _TORCH_LAYERS + _SHEAF
+           "RunStats", "OpsWorld", "WORKFLOWS", "operate"] + _TORCH_LAYERS + _NUMPY
 __version__ = "0.1.0"
